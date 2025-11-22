@@ -5,36 +5,26 @@ module.exports = {
     extend: {
       colors: {
         "neon-pink": "#FF00FF",
-        "neon-lime": "#CCFF00",
+        "neon-lime": "#00FF00",
         "neon-blue": "#00FFFF",
-        "neon-purple": "#bf00ff",
-        "neon-yellow": "#FFFF00",
         "brand-bg": "#F0F0F0",
         "brand-dark": "#111111",
-        "brutal-red": "#FF3333",
       },
       fontFamily: {
         display: ["Anton", "sans-serif"],
         mono: ["Space Mono", "monospace"],
       },
       boxShadow: {
-        hard: "8px 8px 0px #111111",
-        "hard-sm": "4px 4px 0px #111111",
-        "hard-xl": "16px 16px 0px #111111",
-        "hard-pink": "8px 8px 0px #FF00FF",
-        "hard-blue": "8px 8px 0px #00FFFF",
-        "hard-lime": "8px 8px 0px #CCFF00",
-        "hard-purple": "8px 8px 0px #bf00ff",
-        "hard-yellow": "8px 8px 0px #FFFF00",
+        hard: "4px 4px 0px #111111",
+        "hard-sm": "2px 2px 0px #111111",
+        "hard-pink": "5px 5px 0px #FF00FF",
+        "hard-blue": "5px 5px 0px #00FFFF",
+        "hard-lime": "5px 5px 0px #00FF00",
       },
       animation: {
         marquee: "marquee 20s linear infinite",
-        "marquee-reverse": "marquee 20s linear infinite reverse",
         "float-1": "float-1 15s ease-in-out infinite",
         "float-2": "float-2 12s ease-in-out infinite",
-        "spin-slow": "spin 10s linear infinite",
-        "bounce-fast": "bounce 0.5s infinite",
-        "pulse-fast": "pulse 1s cubic-bezier(0.4, 0, 0.6, 1) infinite",
       },
       keyframes: {
         marquee: {
