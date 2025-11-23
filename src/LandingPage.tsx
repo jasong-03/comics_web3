@@ -4,7 +4,8 @@
 */
 
 import React, { useEffect, useRef } from 'react';
-import { ConnectButton, useCurrentAccount } from '@mysten/dapp-kit';
+import { ConnectButton } from '@mysten/dapp-kit';
+import { useTestAccount } from './hooks/useTestWallet';
 
 interface LandingPageProps {
     onEnter: () => void;
@@ -12,7 +13,7 @@ interface LandingPageProps {
 
 export const LandingPage: React.FC<LandingPageProps> = ({ onEnter }) => {
     const scrollRef = useRef<HTMLDivElement>(null);
-    const account = useCurrentAccount();
+    const account = useTestAccount();
     useEffect(() => {
         const observer = new IntersectionObserver(
             (entries) => {
@@ -86,7 +87,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnter }) => {
                     <h2 className="text-6xl md:text-8xl font-display mb-12 text-center scroll-reveal">
                         <span className="bg-neon-lime px-4 shadow-hard border-4 border-brand-dark">ABOUT</span>
                     </h2>
-                    
+
                     <div className="scroll-reveal bg-brand-bg border-4 border-brand-dark shadow-hard-xl p-8 md:p-12 mb-8">
                         <p className="text-xl md:text-2xl leading-relaxed mb-6">
                             Infinite Heroes is a decentralized application (dApp) built on the Sui Network that empowers users to become instant comic book creators.

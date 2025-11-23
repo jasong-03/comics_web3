@@ -194,13 +194,13 @@ export const ComicsApp: React.FC = () => {
     if (isSuiStory) {
       const segmentIndex = pageNum - 1;
       const segmentText = suiStorySegments[segmentIndex] || "The story continues into the future...";
-      
+
       // Get previous context for continuity
       const previousSegments = suiStorySegments.slice(Math.max(0, segmentIndex - 2), segmentIndex);
-      const previousContext = previousSegments.length > 0 
+      const previousContext = previousSegments.length > 0
         ? `PREVIOUS PAGES CONTEXT:\n${previousSegments.map((seg, idx) => `Page ${segmentIndex - previousSegments.length + idx + 1}: ${seg.substring(0, 150)}...`).join("\n")}\n\n`
         : "";
-      
+
       const prompt = `
 You are a master visual storyteller adapting a historical tech narrative into a comic book.
 PAGE ${pageNum} of ${MAX_STORY_PAGES}.
@@ -275,22 +275,22 @@ CONTINUITY: Continue directly from this scene. The story flows left to right, pa
     } else {
       // Create a narrative summary for better flow
       const recentPages = relevantHistory.slice(-3); // Last 3 pages for context
-      const storyArc = relevantHistory.length <= 4 
+      const storyArc = relevantHistory.length <= 4
         ? "EARLY STORY - Establishing the world and characters"
         : relevantHistory.length <= 8
-        ? "MID STORY - Complications and rising tension"
-        : "LATE STORY - Approaching climax";
-      
+          ? "MID STORY - Complications and rising tension"
+          : "LATE STORY - Approaching climax";
+
       historyText = `STORY ARC: ${storyArc}
 STORY FLOW (Pages ${relevantHistory[0]?.pageIndex || 0} to ${relevantHistory[relevantHistory.length - 1]?.pageIndex || 0}):
 
 ${recentPages.map((panel, idx) => {
-  const pageNum = panel.pageIndex || 0;
-  const beat = panel.narrative;
-  return `Page ${pageNum}: ${beat?.caption || ""} ${beat?.dialogue ? `[${beat.dialogue}]` : ""}
+        const pageNum = panel.pageIndex || 0;
+        const beat = panel.narrative;
+        return `Page ${pageNum}: ${beat?.caption || ""} ${beat?.dialogue ? `[${beat.dialogue}]` : ""}
   → Scene: ${beat?.scene || ""}
   ${panel.resolvedChoice ? `  → User decision: "${panel.resolvedChoice}"` : ""}`;
-}).join("\n\n")}
+      }).join("\n\n")}
 
 ${relevantHistory.length > 3 ? `\n[Earlier pages: ${relevantHistory.length - 3} pages of story established]` : ""}
 
@@ -353,11 +353,11 @@ CRITICAL CONTINUITY RULES:
     } else {
       if (pageNum === 1) {
         instruction += " INCITING INCIDENT. An event disrupts the status quo. Establish the genre's intended mood.";
-    } else if (pageNum <= 4) {
+      } else if (pageNum <= 4) {
         instruction += " RISING ACTION. The heroes engage with the new situation. Build upon what happened in previous pages.";
-    } else if (pageNum <= 8) {
+      } else if (pageNum <= 8) {
         instruction += " COMPLICATION. A twist occurs! A secret is revealed or the path is blocked. This must connect to events from earlier pages.";
-    } else {
+      } else {
         instruction += " CLIMAX. The confrontation with the main conflict. Reference and build upon the story arc established in previous pages.";
       }
     }
@@ -421,17 +421,17 @@ OUTPUT STRICT JSON ONLY:
         // Check if scene description seems disconnected
         const lastSceneLower = lastBeat.scene.toLowerCase();
         const currentSceneLower = parsed.scene.toLowerCase();
-        
+
         // If scene doesn't reference continuity and seems disconnected, add a transition
-        if (!currentSceneLower.includes("continue") && 
-            !currentSceneLower.includes("moment") && 
-            !currentSceneLower.includes("after") &&
-            !currentSceneLower.includes("then") &&
-            !currentSceneLower.includes("next")) {
+        if (!currentSceneLower.includes("continue") &&
+          !currentSceneLower.includes("moment") &&
+          !currentSceneLower.includes("after") &&
+          !currentSceneLower.includes("then") &&
+          !currentSceneLower.includes("next")) {
           // Try to infer if it's a location change or time jump
           const lastLocation = lastSceneLower.match(/(?:in|at|on|inside|outside|near|beside|within)\s+([a-z\s]+?)(?:\s|$|,|\.)/);
           const currentLocation = currentSceneLower.match(/(?:in|at|on|inside|outside|near|beside|within)\s+([a-z\s]+?)(?:\s|$|,|\.)/);
-          
+
           if (lastLocation && currentLocation && lastLocation[1] !== currentLocation[1]) {
             // Location changed - add transition context
             parsed.scene = `Continuing from the previous scene, ${parsed.scene.toLowerCase()}`;
@@ -465,7 +465,7 @@ OUTPUT STRICT JSON ONLY:
     } else {
       style = `${selectedGenre} comic`;
     }
-    
+
     try {
       const response = await runModel({
         contents: { text: `STYLE: Masterpiece ${style}, detailed ink, neutral background. FULL BODY. Character: ${desc}` },
@@ -531,7 +531,7 @@ OUTPUT STRICT JSON ONLY:
 
   const generateImage = async (beat: Beat, type: ComicFace["type"]): Promise<string> => {
     const contents: any[] = [];
-  
+
     // Push reference images
     if (heroRef.current?.base64) {
       contents.push({ text: "REFERENCE 1 [HERO]:" });
@@ -547,7 +547,7 @@ OUTPUT STRICT JSON ONLY:
     const isManhwa = selectedGenre === "Manhwa (Korean Webtoon)";
     const isManhua = selectedGenre === "Manhua (Chinese Comics)";
     const isMarvelDC = selectedGenre === "Marvel/DC Superhero";
-    
+
     const styleEra =
       selectedGenre === "Custom" || selectedGenre === "Sui Origin Story"
         ? "Modern High-Fidelity Graphic Novel"
@@ -566,7 +566,7 @@ OUTPUT STRICT JSON ONLY:
     } else {
       promptText = `STYLE: ${styleEra}, high-detail line art, realistic anatomy, cinematic lighting, consistent color grading. `;
     }
-  
+
     // ============================================================
     // ENHANCED GLOBAL INSTRUCTIONS (applies to ALL image types)
     // ============================================================
@@ -607,7 +607,7 @@ OUTPUT STRICT JSON ONLY:
   - Maintain strict character likeness with references at all times.
   - High visual logic: no teleporting, no inconsistent props, no changing outfits unless stated.
   `;
-  
+
     // ============================================================
     // TYPE: COVER / BACK COVER / PANEL
     // ============================================================
@@ -911,7 +911,7 @@ OUTPUT STRICT JSON ONLY:
   // PROMPT 3
   // const generateImage = async (beat: Beat, type: ComicFace["type"]): Promise<string> => {
   //   const contents: any[] = [];
-  
+
   //   // ---------------------------------------------
   //   // Attach reference images
   //   // ---------------------------------------------
@@ -923,7 +923,7 @@ OUTPUT STRICT JSON ONLY:
   //     contents.push({ text: "REFERENCE 2 [CO-STAR]:" });
   //     contents.push({ inlineData: { mimeType: "image/jpeg", data: friendRef.current.base64 } });
   //   }
-  
+
   //   // ---------------------------------------------
   //   // 1) STYLE ANCHOR (from your reference prompts)
   //   // ---------------------------------------------
@@ -941,20 +941,20 @@ OUTPUT STRICT JSON ONLY:
   //       heavy shadows, limited palette (black/white/red)
   //     `
   //   };
-  
+
   //   const styleEra =
   //     selectedGenre === "Custom"
   //       ? "Modern High-Fidelity Graphic Novel"
   //       : selectedGenre === "Sui Origin Story"
   //       ? "Modern High-Fidelity Graphic Novel"
   //       : selectedGenre;
-  
+
   //   const styleAnchor = STYLE_ANCHORS[styleEra as keyof typeof STYLE_ANCHORS] || STYLE_ANCHORS["Modern High-Fidelity Graphic Novel"];
-  
+
   //   let promptText = `
   // STYLE ANCHOR:
   // ${styleAnchor}
-  
+
   // GLOBAL ART RULES:
   // - Ultra-sharp line art, realistic anatomy.
   // - Cinematic lighting consistent between panels.
@@ -962,25 +962,25 @@ OUTPUT STRICT JSON ONLY:
   // - No distortions, no surreal warping.
   // - Consistent outfits, lighting, props, injuries.
   // - Maintain strict likeness to reference images.
-  
+
   // CHARACTER CONTINUITY:
   // - HERO: Must ALWAYS match REFERENCE 1 (facial structure, hairstyle, vibe).
   // - CO-STAR: Must ALWAYS match REFERENCE 2.
   // - Do NOT alter age, facial anatomy, hair, or body type.
-  
+
   // ENVIRONMENT CONTINUITY:
   // - Keep backgrounds consistent unless the script explicitly changes scenes.
   // - No random props or sudden environmental changes.
-  
+
   // CAMERA DIRECTION:
   // - Use cinematic angles (OTS, low-angle, wide shot, close-up).
   // - Depth-of-field optional but should enhance drama.
-  
+
   // PANEL COMPOSITION:
   // - Clean, readable silhouettes.
   // - Speech bubbles MUST NOT cover faces.
   //   `;
-  
+
   //   // ---------------------------------------------
   //   // 2) TYPE-SPECIFIC PROMPT BUILDING
   //   // ---------------------------------------------
@@ -989,7 +989,7 @@ OUTPUT STRICT JSON ONLY:
   //       LANGUAGES.find((language) => language.code === selectedLanguage)?.name || "English";
   //     const title =
   //       selectedGenre === "Sui Origin Story" ? "SUI: THE ORIGIN" : "INFINITE HEROES";
-  
+
   //     promptText += `
   // TYPE: Comic Book Cover
   // TITLE: "${title}" (or translated into ${langName.toUpperCase()})
@@ -998,7 +998,7 @@ OUTPUT STRICT JSON ONLY:
   // AR: 3:2
   //     `;
   //   }
-  
+
   //   else if (type === "back_cover") {
   //     promptText += `
   // TYPE: Back Cover
@@ -1008,55 +1008,55 @@ OUTPUT STRICT JSON ONLY:
   // AR: 2:3
   //     `;
   //   }
-  
+
   //   else {
   //     // ---------------------------------------------
   //     // 3) SCENE PANEL TYPES (Your Phase 3 integrations)
   //     // ---------------------------------------------
-  
+
   //     // Apply your extended templates
   //     promptText += `
   // TYPE: Comic Panel
-  
+
   // SCENE DESCRIPTION:
   // ${beat.scene}
-  
+
   // LOGIC REQUIREMENTS:
   // - Follow physical and story continuity.
   // - If scene includes HERO -> use REFERENCE 1.
   // - If scene includes CO-STAR or SIDEKICK -> use REFERENCE 2.
-  
+
   // ${beat.caption ? `CAPTION BOX: "${beat.caption}"` : ""}
   // ${beat.dialogue ? `SPEECH BUBBLE: "${beat.dialogue}"` : ""}
-  
+
   // ---
-  
+
   // OPTIONAL SCENE ENHANCEMENTS (AI chooses best fit):
-  
+
   // 1) ACTION PANEL MODE:
   // - Close-up or dynamic medium shot.
   // - Motion lines, dramatic rim lighting.
-  
+
   // 2) SPLIT-SCREEN MODE (Dialogue Scenes):
   // - Left: HERO expression matching emotion.
   // - Right: CO-STAR expression reacting logically.
   // - Lightning bolt / energy divide if tension is high.
-  
+
   // 3) FULL PAGE MINI-LAYOUT MODE:
   // - Up to 3 micro-panels inside one frame if story benefits.
   // - Clean gutters, clear storytelling.
-  
+
   // ---
-  
+
   // COMPOSITION:
   // - Clear silhouette focus.
   // - Keep faces unobstructed.
   // - Lighting matches mood of the narrative.
   //     `;
   //   }
-  
+
   //   contents.push({ text: promptText });
-  
+
   //   // ---------------------------------------------
   //   // Execute Model
   //   // ---------------------------------------------
@@ -1068,10 +1068,10 @@ OUTPUT STRICT JSON ONLY:
   //         imageConfig: { aspectRatio: "2:3" }
   //       }
   //     });
-  
+
   //     const part =
   //       response.candidates?.[0]?.content?.parts?.find((p) => p.inlineData);
-  
+
   //     return part?.inlineData?.data
   //       ? `data:${part.inlineData.mimeType};base64,${part.inlineData.data}`
   //       : "";
@@ -1089,20 +1089,20 @@ OUTPUT STRICT JSON ONLY:
 
   const generateSinglePage = async (faceId: string, pageNum: number, type: ComicFace["type"], retryCount = 0): Promise<void> => {
     const MAX_RETRIES = 2;
-    
+
     try {
       // Determine if decision page (disabled for Sui story)
       const isSui = selectedGenre === "Sui Origin Story";
       const isDecision = !isSui && DECISION_PAGES.includes(pageNum);
-    let beat: Beat = { scene: "", choices: [], focus_char: "other" };
+      let beat: Beat = { scene: "", choices: [], focus_char: "other" };
 
-    if (type === "cover") {
-      // Cover beat handled in generateImage
-    } else if (type === "back_cover") {
-      beat = { scene: "Thematic teaser image", choices: [], focus_char: "other" };
-    } else {
+      if (type === "cover") {
+        // Cover beat handled in generateImage
+      } else if (type === "back_cover") {
+        beat = { scene: "Thematic teaser image", choices: [], focus_char: "other" };
+      } else {
         try {
-      beat = await generateBeat(historyRef.current, pageNum % 2 === 0, pageNum, isDecision);
+          beat = await generateBeat(historyRef.current, pageNum % 2 === 0, pageNum, isDecision);
         } catch (error) {
           console.error(`Failed to generate beat for page ${pageNum}:`, error);
           if (retryCount < MAX_RETRIES) {
@@ -1111,26 +1111,26 @@ OUTPUT STRICT JSON ONLY:
             return generateSinglePage(faceId, pageNum, type, retryCount + 1);
           }
           // Fallback beat if all retries fail
-          beat = { 
-            caption: pageNum === 1 ? "It began..." : "...", 
-            scene: `Generic scene for page ${pageNum}.`, 
-            focus_char: "hero", 
-            choices: [] 
+          beat = {
+            caption: pageNum === 1 ? "It began..." : "...",
+            scene: `Generic scene for page ${pageNum}.`,
+            focus_char: "hero",
+            choices: []
           };
         }
-    }
-
-    if (beat.focus_char === "friend" && !friendRef.current && type === "story") {
-      try {
-        const newSidekick = await generatePersona(selectedGenre === "Custom" ? "A fitting sidekick for this story" : `Sidekick for ${selectedGenre} story.`);
-        setFriend(newSidekick);
-      } catch (error) {
-        beat.focus_char = "other";
       }
-    }
 
-    updateFaceState(faceId, { narrative: beat, choices: beat.choices, isDecisionPage: isDecision });
-      
+      if (beat.focus_char === "friend" && !friendRef.current && type === "story") {
+        try {
+          const newSidekick = await generatePersona(selectedGenre === "Custom" ? "A fitting sidekick for this story" : `Sidekick for ${selectedGenre} story.`);
+          setFriend(newSidekick);
+        } catch (error) {
+          beat.focus_char = "other";
+        }
+      }
+
+      updateFaceState(faceId, { narrative: beat, choices: beat.choices, isDecisionPage: isDecision });
+
       // Generate image with retry logic
       let url = "";
       try {
@@ -1151,7 +1151,7 @@ OUTPUT STRICT JSON ONLY:
 
       // Only update if we have a valid URL
       if (url) {
-    updateFaceState(faceId, { imageUrl: url, isLoading: false });
+        updateFaceState(faceId, { imageUrl: url, isLoading: false });
       } else {
         // Keep loading state if generation failed after retries
         console.error(`Failed to generate image for page ${pageNum} after ${MAX_RETRIES + 1} attempts`);
@@ -1195,14 +1195,14 @@ OUTPUT STRICT JSON ONLY:
     });
 
     // Generate pages with individual error handling to prevent one failure from stopping the batch
-      for (const pageNum of pagesToGen) {
+    for (const pageNum of pagesToGen) {
       try {
         await generateSinglePage(`page-${pageNum}`, pageNum, pageNum === BACK_COVER_PAGE ? "back_cover" : "story");
-    } catch (error) {
+      } catch (error) {
         console.error(`Error generating page ${pageNum}:`, error);
         // Mark page as failed but continue with other pages
         updateFaceState(`page-${pageNum}`, { isLoading: false });
-    } finally {
+      } finally {
         generatingPages.current.delete(pageNum);
       }
     }

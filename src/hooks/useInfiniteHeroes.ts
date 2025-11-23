@@ -1,11 +1,12 @@
-import { useCurrentAccount, useSignAndExecuteTransaction, useSuiClient } from "@mysten/dapp-kit";
+import { useSuiClient } from "@mysten/dapp-kit";
 import { Transaction } from "@mysten/sui/transactions";
 import { networkConfig } from "../config";
+import { useTestAccount, useTestSignAndExecute } from "./useTestWallet";
 
 export const useInfiniteHeroes = () => {
     const client = useSuiClient();
-    const account = useCurrentAccount();
-    const { mutateAsync: signAndExecute } = useSignAndExecuteTransaction();
+    const account = useTestAccount();
+    const { mutateAsync: signAndExecute } = useTestSignAndExecute();
 
     const mintHero = async (name: string, blobId: string, metadataUrl: string) => {
         if (!account) throw new Error("Wallet not connected");

@@ -1,5 +1,6 @@
-import { ConnectButton, useCurrentAccount, useSuiClient } from "@mysten/dapp-kit";
+import { ConnectButton, useSuiClient } from "@mysten/dapp-kit";
 import { useQuery } from "@tanstack/react-query";
+import { useTestAccount } from "../hooks/useTestWallet";
 
 const formatBalance = (value?: string | null) => {
   if (!value) {
@@ -13,7 +14,7 @@ const formatBalance = (value?: string | null) => {
 };
 
 export const SuiWalletPanel = () => {
-  const account = useCurrentAccount();
+  const account = useTestAccount();
   const client = useSuiClient();
 
   const {
