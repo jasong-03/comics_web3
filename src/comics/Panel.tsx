@@ -14,6 +14,8 @@ interface PanelProps {
   comicMinted: boolean;
   onContinue: (continueReading: boolean) => void;
   shouldContinue: boolean | null;
+  mintMode: 'test' | 'protocol';
+  onToggleMintMode: () => void;
 }
 
 export const Panel: React.FC<PanelProps> = ({
@@ -28,6 +30,8 @@ export const Panel: React.FC<PanelProps> = ({
   comicMinted,
   onContinue,
   shouldContinue,
+  mintMode,
+  onToggleMintMode,
 }) => {
   if (!face) return <div className="w-full h-full bg-gray-950" />;
   if (face.isLoading && !face.imageUrl) return <LoadingFX />;
@@ -70,8 +74,8 @@ export const Panel: React.FC<PanelProps> = ({
         </div>
       )}
 
-      {/* Continue prompt at page 4 */}
-      {face.type === "story" && face.pageIndex === 4 && shouldContinue === null && face.imageUrl && !face.isLoading && (
+      {/* Continue prompt at end of each batch */}
+      {face.type === "story" && face.pageIndex && face.pageIndex % 4 === 0 && shouldContinue === null && face.imageUrl && !face.isLoading && (
         <div className="absolute bottom-0 inset-x-0 p-6 pb-12 flex flex-col gap-3 items-center justify-end bg-gradient-to-t from-black/90 via-black/50 to-transparent z-20">
           <p className="text-white font-comic text-2xl uppercase tracking-widest mb-2">Continue Reading?</p>
           <div className="flex gap-4 w-full">
@@ -108,9 +112,8 @@ export const Panel: React.FC<PanelProps> = ({
             className="comic-btn bg-yellow-400 px-10 py-4 text-3xl font-bold hover:scale-105 animate-bounce disabled:animate-none disabled:bg-gray-400 disabled:cursor-wait"
           >
             {!allFaces.find((f) => f.pageIndex === GATE_PAGE)?.imageUrl
-              ? `PRINTING... ${
-                  allFaces.filter((f) => f.type === "story" && f.imageUrl && (f.pageIndex || 0) <= GATE_PAGE).length
-                }/${INITIAL_PAGES}`
+              ? `PRINTING... ${allFaces.filter((f) => f.type === "story" && f.imageUrl && (f.pageIndex || 0) <= GATE_PAGE).length
+              }/${INITIAL_PAGES}`
               : "READ COMICS"}
           </button>
         </div>
@@ -140,6 +143,19 @@ export const Panel: React.FC<PanelProps> = ({
               {isMintingComic ? "MINTING..." : "MINT ON SUI"}
             </button>
           )}
+
+          {!comicMinted && (
+            <button
+              onClick={(event) => {
+                event.stopPropagation();
+                onToggleMintMode();
+              }}
+              className="text-xs text-gray-400 hover:text-white underline"
+            >
+              {mintMode === 'protocol' ? "Mode: Wallet (Fees Enforced)" : "Mode: Test (Free)"}
+            </button>
+          )}
+
           {comicMinted && (
             <div className="bg-black text-neon-lime px-8 py-2 text-xl font-bold border-2 border-neon-lime">
               MINTED ON-CHAIN

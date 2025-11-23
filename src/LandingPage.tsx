@@ -90,18 +90,18 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnter, onViewInvento
                         </svg>
                     )}
                 </button>
-                
+
                 {/* FigJam-style Annotation */}
                 <div className="flex items-center gap-2">
                     {/* Arrow pointing from text to button (left direction) */}
-                    <svg 
-                        className="w-6 h-6 text-brand-dark" 
-                        viewBox="0 0 24 24" 
-                        fill="none" 
-                        stroke="currentColor" 
+                    <svg
+                        className="w-6 h-6 text-brand-dark"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
                         strokeWidth="3"
                     >
-                        <path d="M16 12H0M6 6l-6 6 6 6" strokeLinecap="round" strokeLinejoin="round"/>
+                        <path d="M16 12H0M6 6l-6 6 6 6" strokeLinecap="round" strokeLinejoin="round" />
                     </svg>
                     <div className="bg-white border-2 border-brand-dark shadow-hard px-3 py-1.5 font-bold text-sm">
                         PLAY MUSIC
@@ -117,15 +117,15 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnter, onViewInvento
 
                 {/* Floating Elements */}
                 <div className="absolute top-20 left-10 w-32 h-32 border-4 border-brand-dark shadow-hard animate-float-1 hidden md:block rotate-12 overflow-hidden bg-gray-800">
-                    <img 
-                        src="/comics-7.jpeg" 
+                    <img
+                        src="/comics-7.jpeg"
                         alt="Comic 7"
                         className="w-full h-full object-cover"
                     />
                 </div>
                 <div className="absolute bottom-40 right-20 w-48 h-48 border-4 border-brand-dark shadow-hard-pink animate-float-2 hidden md:block -rotate-6 rounded-full overflow-hidden bg-gray-800">
-                    <img 
-                        src="/comics-2.jpeg" 
+                    <img
+                        src="/comics-2.jpeg"
                         alt="Comic 2"
                         className="w-full h-full object-cover"
                     />
@@ -173,6 +173,10 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnter, onViewInvento
                         <div className="scale-150 border-4 border-brand-dark shadow-hard hover:shadow-hard-pink transition-all">
                             <ConnectButton />
                         </div>
+                        <p className="text-xs text-gray-500 font-mono mt-4">
+                            Debug: {account ? `Connected: ${(account as any).address.slice(0, 6)}...` : "No Account Detected"}
+                            (Test Mode: {localStorage.getItem("testMode") || "null"})
+                        </p>
                     </div>
                 )}
             </section>
@@ -346,8 +350,8 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnter, onViewInvento
                 <div className="animate-marquee-reverse whitespace-nowrap">
                     {[1, 2, 3, 4, 5, 6, 7].map((num) => (
                         <div key={num} className="inline-block mx-4 w-64 h-64 border-4 border-white shadow-[8px_8px_0px_#CCFF00] relative group cursor-pointer hover:scale-105 transition-transform overflow-hidden bg-gray-800">
-                            <img 
-                                src={`/comics-${num}.jpeg`} 
+                            <img
+                                src={`/comics-${num}.jpeg`}
                                 alt={`Comic #${num}`}
                                 className="w-full h-full object-cover group-hover:opacity-90 transition-opacity"
                                 onError={(e) => {
@@ -368,8 +372,8 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnter, onViewInvento
                     {/* Duplicate for seamless loop */}
                     {[1, 2, 3, 4, 5, 6, 7].map((num) => (
                         <div key={`duplicate-${num}`} className="inline-block mx-4 w-64 h-64 border-4 border-white shadow-[8px_8px_0px_#CCFF00] relative group cursor-pointer hover:scale-105 transition-transform overflow-hidden bg-gray-800">
-                            <img 
-                                src={`/comics-${num}.jpeg`} 
+                            <img
+                                src={`/comics-${num}.jpeg`}
                                 alt={`Comic #${num}`}
                                 className="w-full h-full object-cover group-hover:opacity-90 transition-opacity"
                                 onError={(e) => {
@@ -423,8 +427,8 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnter, onViewInvento
                 <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-8">
                     <div className="text-center md:text-left">
                         <div className="flex items-center gap-3 mb-2">
-                            <img 
-                                src="/logo.png" 
+                            <img
+                                src="/logo.png"
                                 alt="Infinite Heroes Logo"
                                 className="h-12 w-12 rounded-full object-cover"
                             />

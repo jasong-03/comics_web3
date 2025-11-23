@@ -36,6 +36,19 @@ export const getTestWallet = () => {
   return testKeypair;
 };
 
+export const getForceTestWallet = () => {
+  if (!testKeypair) {
+    try {
+      const decoded = decodeSuiPrivateKey(TEST_PRIVATE_KEY);
+      testKeypair = Ed25519Keypair.fromSecretKey(decoded.secretKey);
+    } catch (error) {
+      console.error("Failed to create test keypair:", error);
+      return null;
+    }
+  }
+  return testKeypair;
+};
+
 export const getTestClient = () => {
   if (!isTestMode()) {
     return null;
@@ -108,7 +121,7 @@ export const enableTestMode = () => {
 };
 
 export const disableTestMode = () => {
-  localStorage.removeItem("testMode");
+  localStorage.setItem("testMode", "false");
   window.location.reload();
 };
 

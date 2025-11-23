@@ -55,8 +55,9 @@ export const ComicsApp: React.FC = () => {
   const [heroId, setHeroId] = useState<string | null>(null);
   const [suiStorySegments, setSuiStorySegments] = useState<string[]>([]);
   const [shouldContinue, setShouldContinue] = useState<boolean | null>(null);
+  const [mintMode, setMintMode] = useState<'test' | 'protocol'>('test');
 
-  const { mintHero, mintComic } = useInfiniteHeroes();
+  const { mintHero, mintComic, mintComicProtocol } = useInfiniteHeroes();
 
   const heroRef = useRef<Persona | null>(null);
   const friendRef = useRef<Persona | null>(null);
@@ -1271,10 +1272,13 @@ OUTPUT STRICT JSON ONLY:
   const handleContinue = async (continueReading: boolean) => {
     setShouldContinue(continueReading);
     if (continueReading) {
-      // Continue generating from page 5
+      // Continue generating from the next page
       const maxPage = Math.max(...historyRef.current.map((face) => face.pageIndex || 0));
       if (maxPage < TOTAL_PAGES) {
-        generateBatch(5, BATCH_SIZE);
+        // Prevent double generation if already generating
+        if (generatingPages.current.size > 0) return;
+
+        generateBatch(maxPage + 1, BATCH_SIZE);
         // Auto-flip to next page to show loading state
         setTimeout(() => setCurrentSheetIndex((prev) => prev + 1), 500);
       }
@@ -1450,16 +1454,30 @@ OUTPUT STRICT JSON ONLY:
       }
 
       // 4. Mint Comic
-      const response = await mintComic(
-        heroId || "0x0", // Pass hero ID if we have it
-        "Infinite Heroes Issue #1",
-        selectedGenre,
-        finalCoverUrl, // Use Walrus URL instead of base64
-        blobId // Real Blob ID
-      );
+      let response;
+      if (mintMode === 'protocol') {
+        console.log("Minting via Protocol (Fee Enforced)...");
+        response = await mintComicProtocol(
+          heroId || "0x0",
+          "Infinite Heroes Issue #1",
+          selectedGenre,
+          finalCoverUrl,
+          blobId
+        );
+      } else {
+        console.log("Minting via Test Mode (Bypass Protocol)...");
+        response = await mintComic(
+          heroId || "0x0",
+          "Infinite Heroes Issue #1",
+          selectedGenre,
+          finalCoverUrl,
+          blobId
+        );
+      }
+
       console.log("Comic Minted:", response);
       setComicMinted(true);
-      alert("Comic Minted Successfully! Blob ID: " + blobId);
+      alert(`Comic Minted Successfully! Blob ID: ${blobId}`);
     } catch (error) {
       console.error("Mint comic failed", error);
       alert("Failed to mint comic. See console.");
@@ -1536,6 +1554,8 @@ OUTPUT STRICT JSON ONLY:
           comicMinted={comicMinted}
           onContinue={handleContinue}
           shouldContinue={shouldContinue}
+          mintMode={mintMode}
+          onToggleMintMode={() => setMintMode(prev => prev === 'test' ? 'protocol' : 'test')}
         />
       </div>
     </div>

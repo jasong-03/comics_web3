@@ -1,4 +1,5 @@
 import { Transaction } from "@mysten/sui/transactions";
+import { useSuiClient } from "@mysten/dapp-kit";
 import { networkConfig } from "../config";
 import { useTestAccount, useTestSignAndExecute } from "./useTestWallet";
 import { base64UrlToBigInt } from "../utils/walrus";
@@ -172,5 +173,142 @@ export const useInfiniteHeroes = () => {
         return response;
     };
 
-    return { mintHero, mintComic };
+    const mintComicProtocol = async (
+        heroId: string,
+        title: string,
+        genre: string,
+        coverUrl: string,
+        blobId: string
+    ) => {
+        if (!account) throw new Error("Wallet not connected");
+
+        const tx = new Transaction() as any;
+
+        // 1. Create Series
+        const series = tx.moveCall({
+            target: `${networkConfig.packageId}::comic_series::create`,
+            arguments: [tx.pure.string(title), tx.pure.string(genre)],
+        });
+
+        // 2. Create Url for Cover
+        const coverUrlObj = tx.moveCall({
+            target: `0x2::url::new_unsafe_from_bytes`,
+            arguments: [tx.pure.string(coverUrl)],
+        });
+
+        // 3. Create Kiosk
+        const [kiosk, kioskOwnerCap] = tx.moveCall({
+            target: `0x2::kiosk::new`,
+        });
+
+        // 4. Prepare Payment (1 SUI = 1,000,000,000 MIST)
+        const [payment] = tx.splitCoins(tx.gas, [tx.pure.u64(1000000000)]);
+
+        // 5. Mint Issue via Protocol
+        // public fun mint_issue(state: &mut ProtocolState, series: &mut ComicSeries, hero: &HeroAsset, title: String, cover_url: Url, walrus_blob_id: u256, mode: String, kiosk: &mut Kiosk, kiosk_cap: &KioskOwnerCap, policy: &TransferPolicy<ComicIssue>, payment: Coin<SUI>, ctx: &mut TxContext)
+        tx.moveCall({
+            target: `${networkConfig.packageId}::protocol::mint_issue`,
+            arguments: [
+                tx.object(networkConfig.protocolState),
+                series,
+                tx.object(heroId),
+                tx.pure.string(title),
+                coverUrlObj,
+                tx.pure.u256(base64UrlToBigInt(blobId)),
+                tx.pure.string("Standard"),
+                kiosk,
+                kioskOwnerCap,
+                tx.object(networkConfig.comicPolicy),
+                payment
+            ],
+        });
+
+        // 6. Share Kiosk and Transfer Caps
+        tx.moveCall({
+            target: `0x2::transfer::public_share_object`,
+            arguments: [kiosk],
+            typeArguments: ["0x2::kiosk::Kiosk"],
+        });
+
+        tx.transferObjects([kioskOwnerCap, series], tx.pure.address(account.address));
+
+        const response = await signAndExecute({
+            transaction: tx,
+        });
+
+        return response;
+    };
+
+    const client = useSuiClient();
+
+    const fetchUserComics = async () => {
+        if (!account) return [];
+
+        try {
+            // 1. Get Kiosk Owner Caps
+            const { data: caps } = await client.getOwnedObjects({
+                owner: account.address,
+                filter: { StructType: `0x2::kiosk::KioskOwnerCap` },
+                options: { showContent: true }
+            });
+
+            const kioskIds = caps.map((cap) => {
+                const content = cap.data?.content as any;
+                return content?.fields?.for;
+            }).filter(Boolean);
+
+            if (kioskIds.length === 0) return [];
+
+            // 2. Fetch Items from Kiosks
+            const comicObjects: any[] = [];
+
+            for (const kioskId of kioskIds) {
+                // Get dynamic fields of the Kiosk (looking for items)
+                const { data: fields } = await client.getDynamicFields({
+                    parentId: kioskId,
+                });
+
+                // Filter for Item keys that hold ComicIssues
+                // The key type for an item in Kiosk is 0x2::kiosk::Item
+                // The name of the field is the ID of the item
+                // We need to check the type of the object it points to, but getDynamicFields doesn't give us the object type directly in a simple way for the *value* unless we fetch it.
+                // However, we can just fetch all objects found in the kiosk and filter them by type later.
+
+                const itemIds = fields
+                    .filter((field) => field.name.type === "0x2::kiosk::Item")
+                    .map((field) => (field.name.value as any).id);
+
+                if (itemIds.length > 0) {
+                    const items = await client.multiGetObjects({
+                        ids: itemIds,
+                        options: { showContent: true, showDisplay: true }
+                    });
+
+                    // Filter for ComicIssue type
+                    const comics = items.filter((item: any) =>
+                        (item.data?.content as any)?.type === `${networkConfig.packageId}::comic_issue::ComicIssue`
+                    );
+
+                    comicObjects.push(...comics);
+                }
+            }
+
+            return comicObjects.map((obj) => {
+                const content = obj.data?.content as any;
+                const fields = content?.fields;
+                return {
+                    id: obj.data?.objectId,
+                    title: fields?.title,
+                    coverUrl: fields?.cover_url?.fields?.url || fields?.cover_url, // Handle Url struct
+                    blobId: fields?.walrus_blob_id,
+                    issueNumber: fields?.issue_number,
+                };
+            });
+        } catch (error) {
+            console.error("Failed to fetch comics:", error);
+            return [];
+        }
+    };
+
+    return { mintHero, mintComic, mintComicProtocol, fetchUserComics };
 };

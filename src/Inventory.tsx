@@ -1,56 +1,67 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { ComicReader } from "./comics/ComicReader";
+import { useInfiniteHeroes } from "./hooks/useInfiniteHeroes";
+import { fetchFromWalrus } from "./utils/walrus";
 
 interface InventoryProps {
   onBack: () => void;
 }
 
-interface Comic {
+interface ComicMetadata {
   id: string;
-  name: string;
-  thumbnail: string;
-  pages: string[];
+  title: string;
+  coverUrl: string;
+  blobId: string;
+  issueNumber: string;
 }
 
-const COMICS: Comic[] = [
-  {
-    id: "comics1",
-    name: "Comic Issue #1",
-    thumbnail: "/sample/comics1/comics1-1.jpeg",
-    pages: [
-      "/sample/comics1/comics1-1.jpeg",
-      "/sample/comics1/comics1-2.jpeg",
-      "/sample/comics1/comics1-3.jpeg",
-      "/sample/comics1/comics1-4.jpeg",
-    ],
-  },
-  {
-    id: "comics2",
-    name: "Comic Issue #2",
-    thumbnail: "/sample/comics2/comics2-1.png",
-    pages: [
-      "/sample/comics2/comics2-1.png",
-      "/sample/comics2/comics2-2.png",
-      "/sample/comics2/comics2-3.png",
-      "/sample/comics2/comics2-4.png",
-    ],
-  },
-];
-
 export const Inventory: React.FC<InventoryProps> = ({ onBack }) => {
-  const [selectedComic, setSelectedComic] = useState<Comic | null>(null);
+  const { fetchUserComics } = useInfiniteHeroes();
+  const [comics, setComics] = useState<ComicMetadata[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [readingComic, setReadingComic] = useState<{ id: string; name: string; pages: string[] } | null>(null);
+  const [fetchingContent, setFetchingContent] = useState(false);
 
-  const handleRead = (comic: Comic) => {
-    setSelectedComic(comic);
+  useEffect(() => {
+    const load = async () => {
+      setLoading(true);
+      const data = await fetchUserComics();
+      setComics(data);
+      setLoading(false);
+    };
+    load();
+  }, []);
+
+  const handleRead = async (comic: ComicMetadata) => {
+    if (!comic.blobId) {
+      alert("This comic has no content data.");
+      return;
+    }
+    setFetchingContent(true);
+    try {
+      const data = await fetchFromWalrus(comic.blobId);
+      // data.pages is array of { imageUrl, ... }
+      const pages = data.pages ? data.pages.map((p: any) => p.imageUrl) : [];
+      setReadingComic({
+        id: comic.id,
+        name: comic.title || `Issue #${comic.issueNumber}`,
+        pages
+      });
+    } catch (e) {
+      console.error(e);
+      alert("Failed to load comic content from Walrus.");
+    } finally {
+      setFetchingContent(false);
+    }
   };
 
-  const handleDownload = (comic: Comic) => {
+  const handleDownload = (comic: ComicMetadata) => {
     // TODO: Implement download functionality
-    alert(`Downloading ${comic.name}...`);
+    alert(`Downloading ${comic.title}...`);
   };
 
-  if (selectedComic) {
-    return <ComicReader comic={selectedComic} onClose={() => setSelectedComic(null)} />;
+  if (readingComic) {
+    return <ComicReader comic={readingComic} onClose={() => setReadingComic(null)} />;
   }
 
   return (
@@ -79,67 +90,93 @@ export const Inventory: React.FC<InventoryProps> = ({ onBack }) => {
             </p>
           </div>
 
-          {/* Comics Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {COMICS.map((comic) => (
-              <div
-                key={comic.id}
-                className="bg-white border-4 border-brand-dark shadow-hard-xl hover:shadow-hard-pink hover:scale-105 transition-all duration-200 group"
-              >
-                <div className="relative overflow-hidden bg-gray-900 aspect-[2/3]">
-                  <img
-                    src={comic.thumbnail}
-                    alt={comic.name}
-                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-                    onError={(e) => {
-                      const target = e.target as HTMLImageElement;
-                      target.style.display = "none";
-                      const placeholder = target.parentElement?.querySelector(".placeholder");
-                      if (placeholder) {
-                        (placeholder as HTMLElement).style.display = "flex";
-                      }
-                    }}
-                  />
-                  <div className="placeholder absolute inset-0 flex items-center justify-center text-white font-display text-2xl opacity-50" style={{ display: "none" }}>
-                    {comic.name}
-                  </div>
-                </div>
-                <div className="p-4 bg-white">
-                  <h3 className="font-display text-xl font-bold text-brand-dark mb-2">{comic.name}</h3>
-                  <p className="text-sm text-gray-600 mb-3">{comic.pages.length} pages</p>
-                  <div className="flex gap-2">
-                    <button
-                      onClick={() => handleRead(comic)}
-                      className="flex-1 comic-btn bg-blue-500 text-white px-4 py-2 text-sm font-bold hover:bg-blue-400"
-                    >
-                      READ
-                    </button>
-                    <button
-                      onClick={() => handleDownload(comic)}
-                      className="flex-1 comic-btn bg-yellow-400 text-black px-4 py-2 text-sm font-bold hover:bg-yellow-300"
-                    >
-                      DOWNLOAD
-                    </button>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          {/* Empty State (if no comics) */}
-          {COMICS.length === 0 && (
+          {loading ? (
             <div className="text-center py-24">
-              <div className="bg-white border-4 border-brand-dark shadow-hard-xl p-12 max-w-2xl mx-auto">
-                <h2 className="text-4xl font-display mb-4">No Comics Yet</h2>
-                <p className="text-xl mb-6">Start creating your first comic to see it here!</p>
-                <button
-                  onClick={onBack}
-                  className="comic-btn bg-neon-pink text-brand-dark px-8 py-4 text-2xl font-bold hover:scale-105"
-                >
-                  CREATE COMIC
-                </button>
-              </div>
+              <p className="text-2xl font-display animate-pulse">Loading your comics...</p>
             </div>
+          ) : (
+            <>
+              {/* Comics Grid */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                {comics.map((comic) => (
+                  <div
+                    key={comic.id}
+                    className="bg-white border-4 border-brand-dark shadow-hard-xl hover:shadow-hard-pink hover:scale-105 transition-all duration-200 group"
+                  >
+                    <div className="relative overflow-hidden bg-gray-900 aspect-[2/3]">
+                      {comic.coverUrl ? (
+                        <img
+                          src={comic.coverUrl}
+                          alt={comic.title}
+                          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                          onError={(e) => {
+                            const target = e.target as HTMLImageElement;
+                            target.style.display = "none";
+                            const placeholder = target.parentElement?.querySelector(".placeholder");
+                            if (placeholder) {
+                              (placeholder as HTMLElement).style.display = "flex";
+                            }
+                          }}
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center bg-gray-800 text-white">
+                          No Cover
+                        </div>
+                      )}
+                      <div className="placeholder absolute inset-0 flex items-center justify-center text-white font-display text-2xl opacity-50" style={{ display: "none" }}>
+                        {comic.title}
+                      </div>
+                    </div>
+                    <div className="p-4 bg-white">
+                      <h3 className="font-display text-xl font-bold text-brand-dark mb-2 truncate">{comic.title || `Issue #${comic.issueNumber}`}</h3>
+                      <div className="text-sm text-gray-600 mb-3 font-mono flex items-center gap-2">
+                        <span>ID:</span>
+                        <a
+                          href={`https://suiscan.xyz/testnet/object/${comic.id}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-blue-600 hover:text-blue-800 hover:underline truncate"
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          {comic.id.slice(0, 6)}...{comic.id.slice(-4)}
+                        </a>
+                      </div>
+                      <div className="flex gap-2">
+                        <button
+                          onClick={() => handleRead(comic)}
+                          disabled={fetchingContent}
+                          className="flex-1 comic-btn bg-blue-500 text-white px-4 py-2 text-sm font-bold hover:bg-blue-400 disabled:bg-gray-400"
+                        >
+                          {fetchingContent ? "LOADING..." : "READ"}
+                        </button>
+                        <button
+                          onClick={() => handleDownload(comic)}
+                          className="flex-1 comic-btn bg-yellow-400 text-black px-4 py-2 text-sm font-bold hover:bg-yellow-300"
+                        >
+                          DOWNLOAD
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Empty State (if no comics) */}
+              {comics.length === 0 && (
+                <div className="text-center py-24">
+                  <div className="bg-white border-4 border-brand-dark shadow-hard-xl p-12 max-w-2xl mx-auto">
+                    <h2 className="text-4xl font-display mb-4">No Comics Yet</h2>
+                    <p className="text-xl mb-6">Start creating your first comic to see it here!</p>
+                    <button
+                      onClick={onBack}
+                      className="comic-btn bg-neon-pink text-brand-dark px-8 py-4 text-2xl font-bold hover:scale-105"
+                    >
+                      CREATE COMIC
+                    </button>
+                  </div>
+                </div>
+              )}
+            </>
           )}
         </div>
       </main>

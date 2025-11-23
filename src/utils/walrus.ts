@@ -1,6 +1,6 @@
 import { WalrusClient } from "@mysten/walrus";
 import { getFullnodeUrl, SuiClient } from "@mysten/sui/client";
-import { getTestWallet } from "./testWallet";
+import { getTestWallet, getForceTestWallet } from "./testWallet";
 
 // Initialize Sui Client for Testnet
 const suiClient = new SuiClient({ url: getFullnodeUrl("testnet") });
@@ -41,7 +41,7 @@ export const base64ToBlob = (base64: string, mimeType: string = "image/jpeg"): U
 };
 
 export const uploadToWalrus = async (file: Uint8Array): Promise<{ blobId: string; blobUrl: string }> => {
-    const signer = getTestWallet();
+    const signer = getForceTestWallet();
 
     if (!signer) {
         throw new Error("Test wallet not available for signing Walrus upload transaction.");
@@ -93,4 +93,34 @@ export const base64UrlToBigInt = (base64Url: string): bigint => {
     }
 
     return result;
+};
+
+export const bigIntToBase64Url = (bigIntStr: string): string => {
+    let value = BigInt(bigIntStr);
+    const bytes = new Uint8Array(32);
+    for (let i = 31; i >= 0; i--) {
+        bytes[i] = Number(value & BigInt(0xff));
+        value >>= BigInt(8);
+    }
+
+    let binary = "";
+    for (let i = 0; i < bytes.length; i++) {
+        binary += String.fromCharCode(bytes[i]);
+    }
+
+    const base64 = btoa(binary);
+    return base64.replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+};
+
+export const fetchFromWalrus = async (blobId: string | bigint) => {
+    let finalId = blobId.toString();
+    // Check if it looks like a large integer (Sui u256)
+    if (/^\d+$/.test(finalId)) {
+        finalId = bigIntToBase64Url(finalId);
+    }
+
+    const url = `https://aggregator.walrus-testnet.walrus.space/v1/blobs/${finalId}`;
+    const response = await fetch(url);
+    if (!response.ok) throw new Error(`Failed to fetch blob: ${response.statusText}`);
+    return response.json();
 };
