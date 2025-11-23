@@ -13,7 +13,6 @@ interface LandingPageProps {
 export const LandingPage: React.FC<LandingPageProps> = ({ onEnter }) => {
     const scrollRef = useRef<HTMLDivElement>(null);
     const account = useCurrentAccount();
-
     useEffect(() => {
         const observer = new IntersectionObserver(
             (entries) => {
@@ -286,9 +285,9 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnter }) => {
                         <p className="text-gray-400">© 2025. All rights reserved.</p>
                     </div>
                     <div className="flex gap-6">
-                        <button className="hover:text-neon-lime hover:underline">TWITTER</button>
-                        <button className="hover:text-neon-lime hover:underline">DISCORD</button>
-                        <button className="hover:text-neon-lime hover:underline">GITHUB</button>
+                        <button type="button" className="hover:text-neon-lime hover:underline bg-transparent border-none cursor-pointer font-mono text-sm">TWITTER</button>
+                        <button type="button" className="hover:text-neon-lime hover:underline bg-transparent border-none cursor-pointer font-mono text-sm">DISCORD</button>
+                        <button type="button" className="hover:text-neon-lime hover:underline bg-transparent border-none cursor-pointer font-mono text-sm">GITHUB</button>
                     </div>
                 </div>
             </footer>

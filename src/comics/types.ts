@@ -8,6 +8,10 @@ export const DECISION_PAGES = [3];
 
 export const GENRES = [
   "Sui Origin Story",
+  "Manga (Colorful)",
+  "Manhwa (Korean Webtoon)",
+  "Manhua (Chinese Comics)",
+  "Marvel/DC Superhero",
   "Classic Horror",
   "Superhero Action",
   "Dark Sci-Fi",
@@ -44,6 +48,11 @@ export const LANGUAGES = [
   { code: "ua-UA", name: "Ukrainian (Ukraine)" },
   { code: "vi-VN", name: "Vietnamese (Vietnam)" },
   { code: "zh-CN", name: "Chinese (China)" },
+];
+
+export const STORIES = [
+  { file: "sui-story.md", name: "Sui Origin Story" },
+  { file: "walrus-story.md", name: "Walrus Story" },
 ];
 
 export interface ComicFace {

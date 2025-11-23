@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { GENRES, LANGUAGES, Persona } from "./types";
+import { GENRES, LANGUAGES, Persona, STORIES } from "./types";
 
 interface SetupProps {
   show: boolean;
@@ -8,12 +8,14 @@ interface SetupProps {
   friend: Persona | null;
   selectedGenre: string;
   selectedLanguage: string;
+  selectedStory: string;
   customPremise: string;
   richMode: boolean;
   onHeroUpload: (file: File) => void;
   onFriendUpload: (file: File) => void;
   onGenreChange: (val: string) => void;
   onLanguageChange: (val: string) => void;
+  onStoryChange: (val: string) => void;
   onPremiseChange: (val: string) => void;
   onRichModeChange: (val: boolean) => void;
   onLaunch: () => void;
@@ -268,6 +270,27 @@ export const Setup: React.FC<SetupProps> = (props) => {
                           </option>
                         ))}
                       </select>
+                    </div>
+
+                    <div className="mb-2">
+                      <p className="font-comic text-base mb-1 font-bold text-gray-800">STORY</p>
+                      <select
+                        value={props.selectedStory}
+                        onChange={(event) => props.onStoryChange(event.target.value)}
+                        className="w-full font-comic text-lg p-1 border-2 border-black uppercase bg-white text-black cursor-pointer shadow-[3px_3px_0px_rgba(0,0,0,0.2)]"
+                        disabled={props.selectedGenre !== "Sui Origin Story"}
+                      >
+                        {STORIES.map((story) => (
+                          <option key={story.file} value={story.file} className="text-black">
+                            {story.name}
+                          </option>
+                        ))}
+                      </select>
+                      {props.selectedGenre !== "Sui Origin Story" && (
+                        <p className="text-xs text-gray-500 mt-1 italic">
+                          Only available for "Sui Origin Story" genre
+                        </p>
+                      )}
                     </div>
 
                     {props.selectedGenre === "Custom" && (

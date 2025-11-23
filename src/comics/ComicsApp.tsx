@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { GoogleGenAI, type GenerateContentParameters } from "@google/genai";
 import jsPDF from "jspdf";
 import {
@@ -12,6 +12,7 @@ import {
   LANGUAGES,
   MAX_STORY_PAGES,
   Persona,
+  STORIES,
   TONES,
   TOTAL_PAGES,
 } from "./types";
@@ -28,83 +29,6 @@ const MODEL_TEXT_NAME = "gemini-2.5-flash";
 const FALLBACK_MODEL = "gemini-2.5-flash-image";
 const FAILURE_THRESHOLD = 3;
 
-// --- SUI STORY DATA ---
-const SUI_STORY_SEGMENTS = [
-  `
-# The Phoenix of Web3: The Story of Sui
-
-## I. The Exodus
-In 2021, five engineers made a decision that baffled the industry. They walked away from Facebook (Meta)—a company offering unlimited resources and job security—to chase a vision the world wasn't ready for yet.
-
-They weren't just leaving a job; they were carrying the torch of an extinguished dream.
-
-Years prior, Mark Zuckerberg had sat before Congress, enduring hours of grilling over Facebook’s "Libra" (later Diem) project. Politicians mocked it as "Zuck Bucks," fearing a corporate takeover of the financial system. Under unbearable pressure, Facebook shut the project down.
-
-**The project died, but the innovation survived.**
-
-The engineers realized that while the *politics* of Libra were flawed, the *technology* they had built was revolutionary. They had created a new programming language, a new virtual machine, and a scalable architecture that was too powerful to let gather dust on a corporate shelf.
-
-## II. Rising from the Ashes
-The "Fantastic Five" (the founding team of Mysten Labs) looked at the wreckage of Diem and saw the blueprint for a new internet. They decided to resurrect the original vision, but with a critical pivot in philosophy:
-
-* **Libra was Permissioned** (Controlled by a few) → **Sui is Permissionless** (Open to all).
-* **Libra was for Payments** → **Sui is for Everything.**
-* **Libra was Closed** → **Sui is Open Source.**
-
-They weren't interested in copying Ethereum or chasing the latest crypto hype. They wanted to do for Web3 what Tim Berners-Lee did for the World Wide Web: create an open, scalable foundation that belongs to everyone.
-
-## III. The Broken Web & The "Patchwork" Problem
-Why go through the trouble of building a new Layer 1 blockchain from scratch?
-
-The founders looked at the current state of the internet and saw "walled gardens." Corporations own your data, take the majority of creator revenue, and lock digital items inside specific ecosystems.
-
-To fix this, they needed a blockchain that moved at the speed of the internet. However, they identified two distinct categories of failure in existing blockchains:
-
-1.  **Blockchain-centric issues:** Slow execution, high fees, and bottlenecks.
-2.  **Language-centric issues:** Smart contract bugs and poor safety guarantees.
-
-Most networks focus on the first and ignore the second. But users don't care *why* they lost money—whether the blockchain stalled or a contract was hacked—**loss is loss.**
-
-## IV. The Secret Weapon: Move
-The team knew that building a faster car is useless if the engine catches fire. Sam Blackshear, one of the founders, had analyzed thousands of bugs at Facebook. His conclusion? **"Code always does exactly what you tell it to do."**
-
-The problem wasn't usually human error; it was that existing languages (like Solidity) made it too easy to make mistakes. This led to the creation of **Move**.
-
-### The Cautionary Tale: The DAO Hack
-To understand why Move matters, look at the history of Ethereum. On June 17, 2016, The DAO was hacked for 3.6 million ETH (billions in today's value).
-
-It was a **Re-Entrancy Attack**.
-* **The Flaw:** A contract sent money before updating its balance sheet.
-* **The Exploit:** The hacker kept asking for withdrawals repeatedly before the contract realized it was empty.
-
-In traditional blockchain development, developers copy-paste code because there is no safe, modular way to share libraries. Every time code is copied, vulnerabilities spread like a virus.
-
-### The Move Solution
-Sui and Move eliminate these issues at the root:
-* **Safety by Default:** Move uses strict typing and formal verification (Move Prover) to ensure code behaves as intended.
-* **Write Less Code:** Move allows for native packages and shared libraries ("fix once, update everywhere").
-* **No Re-Entrancy:** The architecture makes the specific class of bugs that destroyed The DAO impossible by design.
-
-## V. Synergy: When Language Meets Speed
-The genius of Sui lies in the equation: **Language + Infrastructure = Speed.**
-
-In older blockchains, transactions are processed sequentially (one after another). If 10,000 people try to mint an NFT, the whole chain freezes.
-
-Because Move is **object-centric**, Sui can look at transactions and see which ones are related.
-* If Alice sends money to Bob, and Charlie plays a game, those two actions don't touch the same objects.
-* Therefore, Sui executes them **in parallel.**
-
-This is the breakthrough. By fixing the language, they unlocked massive parallel throughput, solving the scalability trilemma without sacrificing security.
-
-## VI. The New Horizon
-Sui is not just another chain; it is a correction of the mistakes of the past decade.
-
-It is building a world where creators own their work, assets move freely between games and apps, and finance operates at the speed of light.
-
-From the ashes of a failed corporate project, the engineers built a public utility. The story of Sui is the story of taking the lessons of failure and turning them into the infrastructure of the future.
-`
-];
-
 export const ComicsApp: React.FC = () => {
   const { validateApiKey, setShowApiKeyDialog, showApiKeyDialog, handleApiKeyDialogContinue } = useApiKey();
   const [hero, setHeroState] = useState<Persona | null>(null);
@@ -114,6 +38,7 @@ export const ComicsApp: React.FC = () => {
   const [customPremise, setCustomPremise] = useState("");
   const [storyTone, setStoryTone] = useState(TONES[0]);
   const [richMode, setRichMode] = useState(true);
+  const [selectedStory, setSelectedStory] = useState(STORIES[0].file);
   const [comicFaces, setComicFaces] = useState<ComicFace[]>([]);
   const [currentSheetIndex, setCurrentSheetIndex] = useState(0);
   const [isStarted, setIsStarted] = useState(false);
@@ -124,6 +49,7 @@ export const ComicsApp: React.FC = () => {
   const [isMintingComic, setIsMintingComic] = useState(false);
   const [comicMinted, setComicMinted] = useState(false);
   const [heroId, setHeroId] = useState<string | null>(null);
+  const [suiStorySegments, setSuiStorySegments] = useState<string[]>([]);
 
   const { mintHero, mintComic } = useInfiniteHeroes();
 
@@ -135,6 +61,45 @@ export const ComicsApp: React.FC = () => {
   const failureRef = useRef(0);
 
   const envApiKey = process.env.REACT_APP_GEMINI_API_KEY || process.env.REACT_APP_API_KEY;
+
+  // Load story segments from markdown file
+  useEffect(() => {
+    if (selectedGenre !== "Sui Origin Story") {
+      // Only load story if genre is Sui Origin Story
+      return;
+    }
+
+    fetch(`/${selectedStory}`)
+      .then((res) => (res.ok ? res.text() : ""))
+      .then((text) => {
+        if (text) {
+          // Parse markdown: split by "## Page X" markers
+          const segments: string[] = [];
+          const pageRegex = /## Page (\d+)\s*\n([\s\S]*?)(?=## Page \d+|$)/g;
+          let match;
+          while ((match = pageRegex.exec(text)) !== null) {
+            const pageNum = parseInt(match[1], 10);
+            const content = match[2].trim();
+            // Store in array index (pageNum - 1) to match page numbers
+            segments[pageNum - 1] = content;
+          }
+          // Fill gaps with empty strings if needed
+          const filledSegments: string[] = [];
+          for (let i = 0; i < MAX_STORY_PAGES; i++) {
+            filledSegments[i] = segments[i] || "The story continues into the future...";
+          }
+          setSuiStorySegments(filledSegments);
+        } else {
+          // Fallback: create empty array
+          setSuiStorySegments(Array(MAX_STORY_PAGES).fill("The story continues into the future..."));
+        }
+      })
+      .catch((error) => {
+        console.warn(`Failed to load ${selectedStory}`, error);
+        // Fallback: create empty array
+        setSuiStorySegments(Array(MAX_STORY_PAGES).fill("The story continues into the future..."));
+      });
+  }, [selectedStory, selectedGenre]);
 
   const setHero = (persona: Persona | null) => {
     setHeroState(persona);
@@ -227,29 +192,37 @@ export const ComicsApp: React.FC = () => {
     // --- SUI STORY OVERRIDE ---
     if (isSuiStory) {
       const segmentIndex = pageNum - 1;
-      const segmentText = SUI_STORY_SEGMENTS[segmentIndex] || "The story continues into the future...";
-
+      const segmentText = suiStorySegments[segmentIndex] || "The story continues into the future...";
+      
+      // Get previous context for continuity
+      const previousSegments = suiStorySegments.slice(Math.max(0, segmentIndex - 2), segmentIndex);
+      const previousContext = previousSegments.length > 0 
+        ? `PREVIOUS PAGES CONTEXT:\n${previousSegments.map((seg, idx) => `Page ${segmentIndex - previousSegments.length + idx + 1}: ${seg.substring(0, 150)}...`).join("\n")}\n\n`
+        : "";
+      
       const prompt = `
 You are a master visual storyteller adapting a historical tech narrative into a comic book.
 PAGE ${pageNum} of ${MAX_STORY_PAGES}.
-SOURCE TEXT:
+${previousContext}SOURCE TEXT FOR THIS PAGE:
 """
 ${segmentText}
 """
 
 INSTRUCTIONS:
-1. ADAPTATION: Convert the SOURCE TEXT into a SINGLE comic panel.
-2. SCENE: Describe a visual metaphor or literal scene that represents the text.
+1. ADAPTATION: Convert the SOURCE TEXT into a SINGLE comic panel that CONTINUES the story flow from previous pages.
+2. CONTINUITY: This story flows LEFT TO RIGHT, page by page. Ensure this page logically continues from the previous pages' narrative.
+3. SCENE: Describe a visual metaphor or literal scene that represents the text.
    - If the text mentions "Engineers" or "Builders", use the visual of the HERO (refer to them as [HERO] in the scene description).
    - If the text mentions "Mark Zuckerberg", "Corporations", "Old Web", or "Vulnerabilities/Bugs", use the visual of the CO-STAR (refer to them as [CO-STAR]).
-3. TEXT: Create a CAPTION that summarizes the key point. Optionally add DIALOGUE if characters are speaking in the text.
-4. LANGUAGE: Output in ${langName}.
+   - CRITICAL: The scene MUST flow naturally from previous pages. If previous pages established a location or situation, maintain that continuity.
+4. TEXT: Create a CAPTION that summarizes the key point and continues the narrative thread. Optionally add DIALOGUE if characters are speaking in the text.
+5. LANGUAGE: Output in ${langName}.
 
 OUTPUT JSON ONLY:
 {
-  "caption": "Narrative text in ${langName} based on source.",
+  "caption": "Narrative text in ${langName} based on source. Must continue the story flow from previous pages.",
   "dialogue": "Optional speech in ${langName}.",
-  "scene": "Visual description. Use [HERO] for protagonists/Sui team, [CO-STAR] for antagonists/Old Web/Bugs.",
+  "scene": "Visual description. Use [HERO] for protagonists/Sui team, [CO-STAR] for antagonists/Old Web/Bugs. MUST maintain continuity with previous pages - if previous scene was in a location, continue there or show natural progression.",
   "focus_char": "hero" or "friend" or "other",
   "choices": []
 }
@@ -284,15 +257,50 @@ OUTPUT JSON ONLY:
 
     const lastBeat = relevantHistory[relevantHistory.length - 1]?.narrative;
     const lastFocus = lastBeat?.focus_char || "none";
+    const secondLastBeat = relevantHistory.length > 1 ? relevantHistory[relevantHistory.length - 2]?.narrative : null;
 
-    const historyText = relevantHistory
-      .map(
-        (panel) =>
-          `[Page ${panel.pageIndex}] [Focus: ${panel.narrative?.focus_char}] (Caption: "${panel.narrative?.caption || ""}") (Dialogue: "${panel.narrative?.dialogue || ""
-          }") (Scene: ${panel.narrative?.scene}) ${panel.resolvedChoice ? `-> USER CHOICE: "${panel.resolvedChoice}"` : ""
-          }`,
-      )
-      .join("\n");
+    // Enhanced history formatting for better continuity
+    let historyText = "";
+    if (relevantHistory.length === 0) {
+      historyText = "This is the beginning of the story. Start the adventure.";
+    } else if (relevantHistory.length === 1) {
+      const panel = relevantHistory[0];
+      historyText = `STORY SO FAR:
+Page ${panel.pageIndex}: ${panel.narrative?.caption || ""} ${panel.narrative?.dialogue ? `[${panel.narrative.dialogue}]` : ""}
+Scene: ${panel.narrative?.scene || ""}
+${panel.resolvedChoice ? `User chose: "${panel.resolvedChoice}"` : ""}
+
+CONTINUITY: Continue directly from this scene. The story flows left to right, page by page.`;
+    } else {
+      // Create a narrative summary for better flow
+      const recentPages = relevantHistory.slice(-3); // Last 3 pages for context
+      const storyArc = relevantHistory.length <= 4 
+        ? "EARLY STORY - Establishing the world and characters"
+        : relevantHistory.length <= 8
+        ? "MID STORY - Complications and rising tension"
+        : "LATE STORY - Approaching climax";
+      
+      historyText = `STORY ARC: ${storyArc}
+STORY FLOW (Pages ${relevantHistory[0]?.pageIndex || 0} to ${relevantHistory[relevantHistory.length - 1]?.pageIndex || 0}):
+
+${recentPages.map((panel, idx) => {
+  const pageNum = panel.pageIndex || 0;
+  const beat = panel.narrative;
+  return `Page ${pageNum}: ${beat?.caption || ""} ${beat?.dialogue ? `[${beat.dialogue}]` : ""}
+  → Scene: ${beat?.scene || ""}
+  ${panel.resolvedChoice ? `  → User decision: "${panel.resolvedChoice}"` : ""}`;
+}).join("\n\n")}
+
+${relevantHistory.length > 3 ? `\n[Earlier pages: ${relevantHistory.length - 3} pages of story established]` : ""}
+
+CRITICAL CONTINUITY RULES:
+1. This story flows LEFT TO RIGHT, page by page in sequence.
+2. Each page MUST directly continue from the previous page's scene.
+3. Characters, locations, and situations MUST remain consistent.
+4. If a character was in a specific location on the previous page, they should logically be there or have moved naturally.
+5. Dialogue and actions must follow the established narrative thread.
+6. NO sudden jumps or disconnected scenes - maintain smooth narrative flow.`;
+    }
 
     let friendInstruction = "Not yet introduced.";
     if (friendRef.current) {
@@ -316,7 +324,23 @@ OUTPUT JSON ONLY:
       3. Avoid "The artifact" or "The device" unless established earlier.
     `;
 
-    let instruction = `Continue the story. ALL OUTPUT TEXT (Captions, Dialogue, Choices) MUST BE IN ${langName.toUpperCase()}. ${coreDriver} ${guardrails}`;
+    // Enhanced continuity instruction
+    let continuityNote = "";
+    if (lastBeat) {
+      continuityNote = `\nCONTINUITY FROM PREVIOUS PAGE: The last scene was "${lastBeat.scene}". `;
+      if (lastBeat.dialogue) {
+        continuityNote += `The last dialogue was "${lastBeat.dialogue}". `;
+      }
+      if (lastBeat.caption) {
+        continuityNote += `The narrative context was: "${lastBeat.caption}". `;
+      }
+      continuityNote += `This page MUST continue directly from that moment, flowing naturally left to right. `;
+      if (secondLastBeat) {
+        continuityNote += `Maintain consistency with the overall story arc established in previous pages.`;
+      }
+    }
+
+    let instruction = `Continue the story seamlessly. ALL OUTPUT TEXT (Captions, Dialogue, Choices) MUST BE IN ${langName.toUpperCase()}. ${coreDriver} ${guardrails}${continuityNote}`;
     if (richMode) {
       instruction += " RICH/NOVEL MODE ENABLED. Prioritize deeper character thoughts, descriptive captions, and meaningful dialogue exchanges over short punchlines.";
     }
@@ -328,12 +352,12 @@ OUTPUT JSON ONLY:
     } else {
       if (pageNum === 1) {
         instruction += " INCITING INCIDENT. An event disrupts the status quo. Establish the genre's intended mood.";
-      } else if (pageNum <= 4) {
-        instruction += " RISING ACTION. The heroes engage with the new situation.";
-      } else if (pageNum <= 8) {
-        instruction += " COMPLICATION. A twist occurs! A secret is revealed or the path is blocked.";
-      } else {
-        instruction += " CLIMAX. The confrontation with the main conflict.";
+    } else if (pageNum <= 4) {
+        instruction += " RISING ACTION. The heroes engage with the new situation. Build upon what happened in previous pages.";
+    } else if (pageNum <= 8) {
+        instruction += " COMPLICATION. A twist occurs! A secret is revealed or the path is blocked. This must connect to events from earlier pages.";
+    } else {
+        instruction += " CLIMAX. The confrontation with the main conflict. Reference and build upon the story arc established in previous pages.";
       }
     }
 
@@ -355,17 +379,21 @@ PREVIOUS PANELS:
 ${historyText.length > 0 ? historyText : "Start the adventure."}
 
 RULES:
-1. NO REPETITION.
+1. NO REPETITION - Each page must advance the story, not repeat previous content.
 2. IF CO-STAR IS ACTIVE, THEY MUST APPEAR FREQUENTLY.
 3. LANGUAGE: All user-facing text MUST be in ${langName}.
+4. CONTINUITY IS CRITICAL - The scene description MUST logically continue from the previous page's scene.
+5. FLOW LEFT TO RIGHT - Story progresses sequentially, each page building on the last.
+6. MAINTAIN CONSISTENCY - Characters, locations, and situations must remain consistent with previous pages.
+7. SMOOTH TRANSITIONS - Avoid sudden jumps. If the previous scene was in a location, this scene should either continue there or show a natural transition.
 
 INSTRUCTION: ${instruction}
 
 OUTPUT STRICT JSON ONLY:
 {
-  "caption": "Unique narrator text in ${langName}. (${capLimit}).",
-  "dialogue": "Unique speech in ${langName}. (${diaLimit}). Optional.",
-  "scene": "Vivid visual description (ALWAYS IN ENGLISH for the artist model). MUST mention 'HERO' or 'CO-STAR' if they are present.",
+  "caption": "Unique narrator text in ${langName}. (${capLimit}). Must continue the narrative thread from previous pages.",
+  "dialogue": "Unique speech in ${langName}. (${diaLimit}). Optional. Should feel like a natural continuation of previous conversations.",
+  "scene": "Vivid visual description (ALWAYS IN ENGLISH for the artist model). MUST mention 'HERO' or 'CO-STAR' if they are present. CRITICAL: This scene MUST logically continue from the previous page's scene - if the previous scene was in a specific location with specific actions, this scene should either continue that moment or show a natural progression (e.g., 'Continuing from where [HERO] was standing...' or 'Moments later, [HERO] moves to...'). Maintain spatial and temporal continuity.",
   "focus_char": "hero" OR "friend" OR "other",
   "choices": ["Option A in ${langName}", "Option B in ${langName}"] (Only if decision page)
     }
@@ -387,6 +415,32 @@ OUTPUT STRICT JSON ONLY:
       if (isDecisionPage && !isFinalPage && (!parsed.choices || parsed.choices.length < 2)) parsed.choices = ["Option A", "Option B"];
       if (!["hero", "friend", "other"].includes(parsed.focus_char)) parsed.focus_char = "hero";
 
+      // Enhance scene description for continuity if we have previous context
+      if (lastBeat && parsed.scene && pageNum > 1) {
+        // Check if scene description seems disconnected
+        const lastSceneLower = lastBeat.scene.toLowerCase();
+        const currentSceneLower = parsed.scene.toLowerCase();
+        
+        // If scene doesn't reference continuity and seems disconnected, add a transition
+        if (!currentSceneLower.includes("continue") && 
+            !currentSceneLower.includes("moment") && 
+            !currentSceneLower.includes("after") &&
+            !currentSceneLower.includes("then") &&
+            !currentSceneLower.includes("next")) {
+          // Try to infer if it's a location change or time jump
+          const lastLocation = lastSceneLower.match(/(?:in|at|on|inside|outside|near|beside|within)\s+([a-z\s]+?)(?:\s|$|,|\.)/);
+          const currentLocation = currentSceneLower.match(/(?:in|at|on|inside|outside|near|beside|within)\s+([a-z\s]+?)(?:\s|$|,|\.)/);
+          
+          if (lastLocation && currentLocation && lastLocation[1] !== currentLocation[1]) {
+            // Location changed - add transition context
+            parsed.scene = `Continuing from the previous scene, ${parsed.scene.toLowerCase()}`;
+          } else {
+            // Same location or unclear - add temporal continuity
+            parsed.scene = `Moments later, ${parsed.scene.toLowerCase()}`;
+          }
+        }
+      }
+
       return parsed as Beat;
     } catch (error) {
       console.error("Beat generation failed", error);
@@ -396,10 +450,24 @@ OUTPUT STRICT JSON ONLY:
   };
 
   const generatePersona = async (desc: string): Promise<Persona> => {
-    const style = selectedGenre === "Custom" || selectedGenre === "Sui Origin Story" ? "Modern American comic book art" : `${selectedGenre} comic`;
+    let style = "";
+    if (selectedGenre === "Custom" || selectedGenre === "Sui Origin Story") {
+      style = "Modern American comic book art";
+    } else if (selectedGenre === "Manga (Colorful)") {
+      style = "Japanese Manga (Colorful) character sheet";
+    } else if (selectedGenre === "Manhwa (Korean Webtoon)") {
+      style = "Korean Manhwa/Webtoon character sheet";
+    } else if (selectedGenre === "Manhua (Chinese Comics)") {
+      style = "Chinese Manhua character sheet";
+    } else if (selectedGenre === "Marvel/DC Superhero") {
+      style = "Marvel/DC Superhero comic book character sheet";
+    } else {
+      style = `${selectedGenre} comic`;
+    }
+    
     try {
       const response = await runModel({
-        contents: { text: `STYLE: Masterpiece ${style} character sheet, detailed ink, neutral background. FULL BODY. Character: ${desc}` },
+        contents: { text: `STYLE: Masterpiece ${style}, detailed ink, neutral background. FULL BODY. Character: ${desc}` },
         model: MODEL_IMAGE_GEN_NAME,
         config: { imageConfig: { aspectRatio: "1:1" } },
       });
@@ -460,153 +528,10 @@ OUTPUT STRICT JSON ONLY:
 
 
 
-  // PROMPT 2: Enhanced Global Instructions (applies to ALL image types)
-  // const generateImage = async (beat: Beat, type: ComicFace["type"]): Promise<string> => {
-  //   const contents: any[] = [];
-
-  //   // Push reference images
-  //   if (heroRef.current?.base64) {
-  //     contents.push({ text: "REFERENCE 1 [HERO]:" });
-  //     contents.push({ inlineData: { mimeType: "image/jpeg", data: heroRef.current.base64 } });
-  //   }
-  //   if (friendRef.current?.base64) {
-  //     contents.push({ text: "REFERENCE 2 [CO-STAR]:" });
-  //     contents.push({ inlineData: { mimeType: "image/jpeg", data: friendRef.current.base64 } });
-  //   }
-
-  //   // Style + Era
-  //   const styleEra =
-  //     selectedGenre === "Custom" || selectedGenre === "Sui Origin Story"
-  //       ? "Modern High-Fidelity Graphic Novel"
-  //       : selectedGenre;
-
-  //   let promptText = `STYLE: ${styleEra}, high-detail line art, realistic anatomy, cinematic lighting, consistent color grading. `;
-
-  //   // ============================================================
-  //   // ENHANCED GLOBAL INSTRUCTIONS (applies to ALL image types)
-  //   // ============================================================
-  //   const GLOBAL_ENHANCE = `
-  // ART DIRECTION:
-  // - Ultra-sharp line art, realistic anatomy, polished shading.
-  // - Cinematic lighting consistent between panels.
-  // - No distortion of faces or bodies.
-
-  // CHARACTER BIBLE:
-  // - HERO: Maintain strict likeness with REFERENCE 1 (facial structure, hairstyle, vibe, skin tone).
-  // - CO-STAR: Maintain likeness with REFERENCE 2.
-  // - Do NOT age, deform, or alter facial structure unless explicitly stated.
-
-  // SCENE CONTINUITY:
-  // - Keep outfits, lighting, props, injuries, and environment consistent.
-  // - Maintain continuity with previous panels even if not shown.
-  // - Character physical placement must follow logical spatial movement.
-
-  // CAMERA DIRECTION:
-  // - Use cinematic angles: low-angle, over-the-shoulder, medium shot, dynamic framing.
-  // - Apply depth-of-field when appropriate.
-
-  // ENVIRONMENT RULES:
-  // - Background must remain consistent unless script explicitly changes.
-  // - No random new elements.
-
-  // EMOTION CONTROL:
-  // - Expressions must reflect the emotional tone of the scene.
-  // - Use subtle micro-expressions for realism.
-
-  // PANEL COMPOSITION:
-  // - Clean framing, avoid clutter.
-  // - Do NOT cover character faces with speech bubbles or captions.
-  // - Clear silhouette readability.
-
-  // GENERAL RULES:
-  // - Maintain strict character likeness with references at all times.
-  // - High visual logic: no teleporting, no inconsistent props, no changing outfits unless stated.
-  // `;
-
-  //   // ============================================================
-  //   // TYPE: COVER / BACK COVER / PANEL
-  //   // ============================================================
-  //   if (type === "cover") {
-  //     const langName =
-  //       LANGUAGES.find((language) => language.code === selectedLanguage)?.name || "English";
-  //     const title =
-  //       selectedGenre === "Sui Origin Story" ? "SUI: THE ORIGIN" : "INFINITE HEROES";
-
-  //     promptText += `
-  // TYPE: Comic Book Cover.
-  // TITLE: "${title}" (OR TRANSLATION IN ${langName.toUpperCase()}).
-  // Main visual: Dynamic, high-impact action shot of [HERO] using REFERENCE 1.
-  // Full detail, dramatic lighting, poster-quality composition.
-  // ${GLOBAL_ENHANCE}
-  //     `;
-  //   }
-
-  //   else if (type === "back_cover") {
-  //     promptText += `
-  // TYPE: Comic Back Cover.
-  // FULL PAGE VERTICAL ART.
-  // Dramatic teaser tone. Include small teaser text: "NEXT ISSUE SOON".
-  // Poster-like, emotional atmosphere.
-  // ${GLOBAL_ENHANCE}
-  //     `;
-  //   }
-
-  //   else {
-  //     // PANEL GENERATION (Main)
-  //     promptText += `
-  // TYPE: Vertical comic panel.
-
-  // SCENE DESCRIPTION:
-  // ${beat.scene}
-
-  // INSTRUCTIONS:
-  // - Maintain strict likeness for any mention of HERO (use REFERENCE 1).
-  // - Maintain strict likeness for any mention of CO-STAR/SIDEKICK (use REFERENCE 2).
-  // - Render the action logically and cinematically.
-
-  // ${beat.caption ? `CAPTION BOX: "${beat.caption}".` : ""}
-  // ${beat.dialogue ? `SPEECH BUBBLE: "${beat.dialogue}".` : ""}
-
-  // ${GLOBAL_ENHANCE}
-  //     `;
-  //   }
-
-  //   contents.push({ text: promptText });
-
-  //   // ============================================================
-  //   // EXECUTE MODEL
-  //   // ============================================================
-  //   try {
-  //     const response = await runModel({
-  //       contents,
-  //       model: MODEL_IMAGE_GEN_NAME,
-  //       config: {
-  //         imageConfig: {
-  //           aspectRatio: "2:3", // comic vertical
-  //         },
-  //       },
-  //     });
-
-  //     const part =
-  //       response.candidates?.[0]?.content?.parts?.find((p) => p.inlineData);
-
-  //     return part?.inlineData?.data
-  //       ? `data:${part.inlineData.mimeType};base64,${part.inlineData.data}`
-  //       : "";
-  //   } catch (error) {
-  //     handleAPIError(error);
-  //     return "";
-  //   }
-  // };
-
-
-  // PROMPT 3
   const generateImage = async (beat: Beat, type: ComicFace["type"]): Promise<string> => {
     const contents: any[] = [];
-
-    // ---------------------------------------------
-    // Attach reference images
-    // ---------------------------------------------
+  
+    // Push reference images
     if (heroRef.current?.base64) {
       contents.push({ text: "REFERENCE 1 [HERO]:" });
       contents.push({ inlineData: { mimeType: "image/jpeg", data: heroRef.current.base64 } });
@@ -616,149 +541,357 @@ OUTPUT STRICT JSON ONLY:
       contents.push({ inlineData: { mimeType: "image/jpeg", data: friendRef.current.base64 } });
     }
 
-    // ---------------------------------------------
-    // 1) STYLE ANCHOR (from your reference prompts)
-    // ---------------------------------------------
-    const STYLE_ANCHORS = {
-      "Modern High-Fidelity Graphic Novel": `
-        Comic book art style, bold ink lines, vivid coloring, cel-shaded, dynamic composition,
-        high detail, cinematic lighting
-      `,
-      "Manga": `
-        Manga art style, black and white, screentones, ink wash, high contrast,
-        intricate linework, dramatic angles
-      `,
-      "Noir": `
-        Graphic novel style, Frank Miller aesthetic, chiaroscuro lighting,
-        heavy shadows, limited palette (black/white/red)
-      `
-    };
-
+    // Style + Era Detection
+    const isManga = selectedGenre === "Manga (Colorful)";
+    const isManhwa = selectedGenre === "Manhwa (Korean Webtoon)";
+    const isManhua = selectedGenre === "Manhua (Chinese Comics)";
+    const isMarvelDC = selectedGenre === "Marvel/DC Superhero";
+    
     const styleEra =
-      selectedGenre === "Custom"
+      selectedGenre === "Custom" || selectedGenre === "Sui Origin Story"
         ? "Modern High-Fidelity Graphic Novel"
-        : selectedGenre === "Sui Origin Story"
-          ? "Modern High-Fidelity Graphic Novel"
-          : selectedGenre;
+        : selectedGenre;
 
-    const styleAnchor = STYLE_ANCHORS[styleEra as keyof typeof STYLE_ANCHORS] || STYLE_ANCHORS["Modern High-Fidelity Graphic Novel"];
-
-    let promptText = `
-  STYLE ANCHOR:
-  ${styleAnchor}
+    // Base style prompt based on genre
+    let promptText = "";
+    if (isManga) {
+      promptText = `STYLE: Japanese Manga (Colorful), vibrant colors, traditional manga art style, detailed linework, dramatic angles, expressive characters, manga speech bubbles, colorful manga aesthetics. `;
+    } else if (isManhwa) {
+      promptText = `STYLE: Korean Manhwa/Webtoon, vertical scroll format, vibrant colors, clean line art, modern digital art style, webtoon panel layout, expressive characters, Korean comic aesthetics. `;
+    } else if (isManhua) {
+      promptText = `STYLE: Chinese Manhua, colorful detailed art, traditional Chinese comic style, intricate backgrounds, expressive character designs, vibrant palette, Chinese comic aesthetics. `;
+    } else if (isMarvelDC) {
+      promptText = `STYLE: Marvel/DC Superhero Comics, classic American comic book art, bold colors, dynamic action poses, dramatic lighting, superhero comic aesthetics, iconic superhero style. `;
+    } else {
+      promptText = `STYLE: ${styleEra}, high-detail line art, realistic anatomy, cinematic lighting, consistent color grading. `;
+    }
   
-  GLOBAL ART RULES:
-  - Ultra-sharp line art, realistic anatomy.
+    // ============================================================
+    // ENHANCED GLOBAL INSTRUCTIONS (applies to ALL image types)
+    // ============================================================
+    const GLOBAL_ENHANCE = `
+  ART DIRECTION:
+  - Ultra-sharp line art, realistic anatomy, polished shading.
   - Cinematic lighting consistent between panels.
-  - Dynamic framing and camera movement.
-  - No distortions, no surreal warping.
-  - Consistent outfits, lighting, props, injuries.
-  - Maintain strict likeness to reference images.
+  - No distortion of faces or bodies.
   
-  CHARACTER CONTINUITY:
-  - HERO: Must ALWAYS match REFERENCE 1 (facial structure, hairstyle, vibe).
-  - CO-STAR: Must ALWAYS match REFERENCE 2.
-  - Do NOT alter age, facial anatomy, hair, or body type.
+  CHARACTER BIBLE:
+  - HERO: Maintain strict likeness with REFERENCE 1 (facial structure, hairstyle, vibe, skin tone).
+  - CO-STAR: Maintain likeness with REFERENCE 2.
+  - Do NOT age, deform, or alter facial structure unless explicitly stated.
   
-  ENVIRONMENT CONTINUITY:
-  - Keep backgrounds consistent unless the script explicitly changes scenes.
-  - No random props or sudden environmental changes.
+  SCENE CONTINUITY:
+  - Keep outfits, lighting, props, injuries, and environment consistent.
+  - Maintain continuity with previous panels even if not shown.
+  - Character physical placement must follow logical spatial movement.
   
   CAMERA DIRECTION:
-  - Use cinematic angles (OTS, low-angle, wide shot, close-up).
-  - Depth-of-field optional but should enhance drama.
+  - Use cinematic angles: low-angle, over-the-shoulder, medium shot, dynamic framing.
+  - Apply depth-of-field when appropriate.
+  
+  ENVIRONMENT RULES:
+  - Background must remain consistent unless script explicitly changes.
+  - No random new elements.
+  
+  EMOTION CONTROL:
+  - Expressions must reflect the emotional tone of the scene.
+  - Use subtle micro-expressions for realism.
   
   PANEL COMPOSITION:
-  - Clean, readable silhouettes.
-  - Speech bubbles MUST NOT cover faces.
-    `;
-
-    // ---------------------------------------------
-    // 2) TYPE-SPECIFIC PROMPT BUILDING
-    // ---------------------------------------------
+  - Clean framing, avoid clutter.
+  - Do NOT cover character faces with speech bubbles or captions.
+  - Clear silhouette readability.
+  
+  GENERAL RULES:
+  - Maintain strict character likeness with references at all times.
+  - High visual logic: no teleporting, no inconsistent props, no changing outfits unless stated.
+  `;
+  
+    // ============================================================
+    // TYPE: COVER / BACK COVER / PANEL
+    // ============================================================
     if (type === "cover") {
       const langName =
         LANGUAGES.find((language) => language.code === selectedLanguage)?.name || "English";
       const title =
         selectedGenre === "Sui Origin Story" ? "SUI: THE ORIGIN" : "INFINITE HEROES";
 
-      promptText += `
-  TYPE: Comic Book Cover
-  TITLE: "${title}" (or translated into ${langName.toUpperCase()})
-  Main Visual: High-impact action portrait of HERO using REFERENCE 1.
-  Epic pose. Cinematic lighting. Poster composition.
-  AR: 3:2
-      `;
+      if (isManga) {
+        promptText += `
+  TYPE: Japanese Manga Cover (Colorful).
+  TITLE: "${title}" (OR TRANSLATION IN ${langName.toUpperCase()}).
+  Main visual: Dynamic manga-style action shot of [HERO] using REFERENCE 1.
+  Colorful manga art with vibrant colors, detailed linework, dramatic lighting.
+  Manga cover composition with title text integrated in manga style.
+  Expressive character pose, dramatic angles, traditional colorful manga aesthetics.
+        `;
+      } else if (isManhwa) {
+        promptText += `
+  TYPE: Korean Manhwa/Webtoon Cover.
+  TITLE: "${title}" (OR TRANSLATION IN ${langName.toUpperCase()}).
+  Main visual: Dynamic webtoon-style action shot of [HERO] using REFERENCE 1.
+  Vibrant colors, clean digital art, modern Korean comic aesthetics.
+  Vertical-oriented cover design, webtoon-style composition.
+  Expressive character pose, dramatic angles, Korean comic book style.
+        `;
+      } else if (isManhua) {
+        promptText += `
+  TYPE: Chinese Manhua Cover.
+  TITLE: "${title}" (OR TRANSLATION IN ${langName.toUpperCase()}).
+  Main visual: Dynamic manhua-style action shot of [HERO] using REFERENCE 1.
+  Colorful detailed art, intricate backgrounds, vibrant palette.
+  Chinese comic cover composition with title text in Chinese comic style.
+  Expressive character pose, dramatic angles, traditional Chinese comic aesthetics.
+        `;
+      } else if (isMarvelDC) {
+        promptText += `
+  TYPE: Marvel/DC Superhero Comic Cover.
+  TITLE: "${title}" (OR TRANSLATION IN ${langName.toUpperCase()}).
+  Main visual: Dynamic superhero-style action shot of [HERO] using REFERENCE 1.
+  Classic American comic book art, bold colors, dramatic lighting.
+  Superhero cover composition with title text in comic book style.
+  Iconic superhero pose, dramatic angles, Marvel/DC comic aesthetics.
+        `;
+      } else {
+        promptText += `
+  TYPE: Comic Book Cover.
+  TITLE: "${title}" (OR TRANSLATION IN ${langName.toUpperCase()}).
+  Main visual: Dynamic, high-impact action shot of [HERO] using REFERENCE 1.
+  Full detail, dramatic lighting, poster-quality composition.
+  ${GLOBAL_ENHANCE}
+        `;
+      }
     }
 
     else if (type === "back_cover") {
-      promptText += `
-  TYPE: Back Cover
-  Vertical full-page art.
-  Dramatic atmosphere, teaser tone.
-  Include small text: "NEXT ISSUE SOON".
-  AR: 2:3
-      `;
+      if (isManga) {
+        promptText += `
+  TYPE: Japanese Manga Back Cover (Colorful).
+  FULL PAGE VERTICAL ART.
+  Dramatic teaser tone in manga style. Include small teaser text: "NEXT ISSUE SOON" in manga typography.
+  Colorful manga art with vibrant colors, emotional atmosphere, traditional colorful manga aesthetics.
+        `;
+      } else if (isManhwa) {
+        promptText += `
+  TYPE: Korean Manhwa/Webtoon Back Cover.
+  FULL PAGE VERTICAL ART.
+  Dramatic teaser tone in webtoon style. Include small teaser text: "NEXT ISSUE SOON" in webtoon typography.
+  Vibrant colors, modern Korean comic aesthetics, emotional atmosphere.
+        `;
+      } else if (isManhua) {
+        promptText += `
+  TYPE: Chinese Manhua Back Cover.
+  FULL PAGE VERTICAL ART.
+  Dramatic teaser tone in manhua style. Include small teaser text: "NEXT ISSUE SOON" in Chinese comic typography.
+  Colorful detailed art, Chinese comic aesthetics, emotional atmosphere.
+        `;
+      } else if (isMarvelDC) {
+        promptText += `
+  TYPE: Marvel/DC Superhero Comic Back Cover.
+  FULL PAGE VERTICAL ART.
+  Dramatic teaser tone in superhero comic style. Include small teaser text: "NEXT ISSUE SOON" in comic book typography.
+  Classic American comic book art, bold colors, superhero comic aesthetics.
+        `;
+      } else {
+        promptText += `
+  TYPE: Comic Back Cover.
+  FULL PAGE VERTICAL ART.
+  Dramatic teaser tone. Include small teaser text: "NEXT ISSUE SOON".
+  Poster-like, emotional atmosphere.
+  ${GLOBAL_ENHANCE}
+        `;
+      }
     }
 
     else {
-      // ---------------------------------------------
-      // 3) SCENE PANEL TYPES (Your Phase 3 integrations)
-      // ---------------------------------------------
-
-      // Apply your extended templates
-      promptText += `
-  TYPE: Comic Panel
+      // PANEL GENERATION (Main)
+      if (isManga) {
+        // Manga style: Multiple panels layout (like Doraemon style)
+        promptText += `
+  TYPE: Japanese Manga Page Layout (Colorful).
+  
+  LAYOUT REQUIREMENTS:
+  - Create a manga page with multiple panels (3-4 rows, 2-3 panels per row).
+  - Use vibrant colors throughout, colorful manga art style.
+  - Traditional manga art style with expressive linework.
+  - Manga-style speech bubbles (oval/cloud shapes with tails pointing to speakers).
   
   SCENE DESCRIPTION:
   ${beat.scene}
   
-  LOGIC REQUIREMENTS:
-  - Follow physical and story continuity.
-  - If scene includes HERO -> use REFERENCE 1.
-  - If scene includes CO-STAR or SIDEKICK -> use REFERENCE 2.
+  PANEL DISTRIBUTION:
+  - Break the scene into 6-12 smaller panels across the page.
+  - Each panel should show a moment or reaction.
+  - Use varied panel sizes for visual rhythm (some small, some larger for emphasis).
+  - Include close-ups, medium shots, and wide shots for variety.
   
-  ${beat.caption ? `CAPTION BOX: "${beat.caption}"` : ""}
-  ${beat.dialogue ? `SPEECH BUBBLE: "${beat.dialogue}"` : ""}
+  INSTRUCTIONS:
+  - Maintain strict likeness for any mention of HERO (use REFERENCE 1).
+  - Maintain strict likeness for any mention of CO-STAR/SIDEKICK (use REFERENCE 2).
+  - Use manga-style expressions: exaggerated emotions, sweat drops, action lines.
+  - Colorful manga art with vibrant colors, detailed shading and highlights.
+  - Manga speech bubbles with tails pointing to the speaking character.
   
-  ---
+  ${beat.caption ? `CAPTION/NARRATION: "${beat.caption}" (place in caption box at top or side of relevant panel).` : ""}
+  ${beat.dialogue ? `DIALOGUE: "${beat.dialogue}" (place in manga speech bubble with tail pointing to speaker).` : ""}
   
-  OPTIONAL SCENE ENHANCEMENTS (AI chooses best fit):
+  MANGA ART RULES:
+  - Vibrant colorful manga art, no black and white.
+  - Detailed ink linework with colorful fills.
+  - Rich colors for backgrounds, characters, and effects.
+  - Expressive character faces and body language.
+  - Dynamic panel composition.
+  - Traditional manga page reading flow (right to left optional, but maintain clear reading order).
+        `;
+      } else if (isManhwa) {
+        // Manhwa/Webtoon style: Vertical scroll format
+        promptText += `
+  TYPE: Korean Manhwa/Webtoon Panel Layout.
   
-  1) ACTION PANEL MODE:
-  - Close-up or dynamic medium shot.
-  - Motion lines, dramatic rim lighting.
+  LAYOUT REQUIREMENTS:
+  - Create a webtoon-style vertical panel layout (long vertical strip format).
+  - Vibrant colors, clean digital art style.
+  - Modern Korean comic aesthetics.
+  - Webtoon-style speech bubbles and text placement.
   
-  2) SPLIT-SCREEN MODE (Dialogue Scenes):
-  - Left: HERO expression matching emotion.
-  - Right: CO-STAR expression reacting logically.
-  - Lightning bolt / energy divide if tension is high.
+  SCENE DESCRIPTION:
+  ${beat.scene}
   
-  3) FULL PAGE MINI-LAYOUT MODE:
-  - Up to 3 micro-panels inside one frame if story benefits.
-  - Clean gutters, clear storytelling.
+  PANEL DISTRIBUTION:
+  - Vertical scroll format with 2-4 panels stacked vertically.
+  - Each panel can be full-width or split into columns.
+  - Use varied panel heights for visual rhythm.
+  - Include close-ups, medium shots, and wide shots for variety.
   
-  ---
+  INSTRUCTIONS:
+  - Maintain strict likeness for any mention of HERO (use REFERENCE 1).
+  - Maintain strict likeness for any mention of CO-STAR/SIDEKICK (use REFERENCE 2).
+  - Use webtoon-style expressions: modern, expressive, clean art style.
+  - Vibrant colors with clean line art.
+  - Webtoon speech bubbles with modern styling.
   
-  COMPOSITION:
-  - Clear silhouette focus.
-  - Keep faces unobstructed.
-  - Lighting matches mood of the narrative.
-      `;
+  ${beat.caption ? `CAPTION/NARRATION: "${beat.caption}" (place in caption box at top or side of relevant panel).` : ""}
+  ${beat.dialogue ? `DIALOGUE: "${beat.dialogue}" (place in webtoon speech bubble).` : ""}
+  
+  MANHWA ART RULES:
+  - Vibrant, modern color palette.
+  - Clean digital line art.
+  - Modern Korean comic aesthetics.
+  - Expressive character faces and body language.
+  - Vertical scroll composition.
+  - Webtoon-style panel flow.
+        `;
+      } else if (isManhua) {
+        // Manhua style: Colorful Chinese comics
+        promptText += `
+  TYPE: Chinese Manhua Panel Layout.
+  
+  LAYOUT REQUIREMENTS:
+  - Create a manhua-style page layout (can be multi-panel or single large panel).
+  - Colorful detailed art with intricate backgrounds.
+  - Traditional Chinese comic aesthetics.
+  - Manhua-style speech bubbles and text placement.
+  
+  SCENE DESCRIPTION:
+  ${beat.scene}
+  
+  PANEL DISTRIBUTION:
+  - Can be single large panel or 2-4 panels arranged horizontally/vertically.
+  - Each panel should show detailed scenes with intricate backgrounds.
+  - Use varied panel sizes for visual rhythm.
+  - Include close-ups, medium shots, and wide shots for variety.
+  
+  INSTRUCTIONS:
+  - Maintain strict likeness for any mention of HERO (use REFERENCE 1).
+  - Maintain strict likeness for any mention of CO-STAR/SIDEKICK (use REFERENCE 2).
+  - Use manhua-style expressions: detailed, expressive, colorful art style.
+  - Vibrant colors with intricate linework and detailed backgrounds.
+  - Manhua speech bubbles with Chinese comic styling.
+  
+  ${beat.caption ? `CAPTION/NARRATION: "${beat.caption}" (place in caption box at top or side of relevant panel).` : ""}
+  ${beat.dialogue ? `DIALOGUE: "${beat.dialogue}" (place in manhua speech bubble).` : ""}
+  
+  MANHUA ART RULES:
+  - Vibrant, detailed color palette.
+  - Intricate linework and backgrounds.
+  - Chinese comic aesthetics.
+  - Expressive character faces and body language.
+  - Detailed panel composition.
+  - Traditional Chinese comic style.
+        `;
+      } else if (isMarvelDC) {
+        // Marvel/DC Superhero style
+        promptText += `
+  TYPE: Marvel/DC Superhero Comic Panel.
+  
+  LAYOUT REQUIREMENTS:
+  - Create a classic American superhero comic panel.
+  - Bold colors, dynamic action poses.
+  - Dramatic lighting and composition.
+  - Classic superhero comic aesthetics.
+  
+  SCENE DESCRIPTION:
+  ${beat.scene}
+  
+  PANEL STYLE:
+  - Single vertical panel with dynamic superhero composition.
+  - Bold, vibrant colors typical of Marvel/DC comics.
+  - Dramatic action poses and dynamic angles.
+  - Classic comic book art style.
+  
+  INSTRUCTIONS:
+  - Maintain strict likeness for any mention of HERO (use REFERENCE 1).
+  - Maintain strict likeness for any mention of CO-STAR/SIDEKICK (use REFERENCE 2).
+  - Use superhero-style expressions: heroic, dynamic, powerful.
+  - Bold colors with dramatic lighting.
+  - Classic comic book speech bubbles.
+  
+  ${beat.caption ? `CAPTION BOX: "${beat.caption}" (place in classic comic book caption box).` : ""}
+  ${beat.dialogue ? `SPEECH BUBBLE: "${beat.dialogue}" (place in classic comic book speech bubble).` : ""}
+  
+  SUPERHERO ART RULES:
+  - Bold, vibrant color palette (Marvel/DC style).
+  - Dynamic action poses.
+  - Dramatic lighting and shadows.
+  - Classic American comic book aesthetics.
+  - Iconic superhero composition.
+  - Powerful, heroic character expressions.
+        `;
+      } else {
+        // Standard comic style
+        promptText += `
+  TYPE: Vertical comic panel.
+  
+  SCENE DESCRIPTION:
+  ${beat.scene}
+  
+  INSTRUCTIONS:
+  - Maintain strict likeness for any mention of HERO (use REFERENCE 1).
+  - Maintain strict likeness for any mention of CO-STAR/SIDEKICK (use REFERENCE 2).
+  - Render the action logically and cinematically.
+  
+  ${beat.caption ? `CAPTION BOX: "${beat.caption}".` : ""}
+  ${beat.dialogue ? `SPEECH BUBBLE: "${beat.dialogue}".` : ""}
+  
+  ${GLOBAL_ENHANCE}
+        `;
+      }
     }
 
     contents.push({ text: promptText });
 
-    // ---------------------------------------------
-    // Execute Model
-    // ---------------------------------------------
+    // ============================================================
+    // EXECUTE MODEL
+    // ============================================================
     try {
       const response = await runModel({
         contents,
         model: MODEL_IMAGE_GEN_NAME,
         config: {
-          imageConfig: { aspectRatio: "2:3" }
-        }
+          imageConfig: {
+            aspectRatio: "2:3", // comic vertical
+          },
+        },
       });
 
       const part =
@@ -773,16 +906,193 @@ OUTPUT STRICT JSON ONLY:
     }
   };
 
+
+  // PROMPT 3
+  // const generateImage = async (beat: Beat, type: ComicFace["type"]): Promise<string> => {
+  //   const contents: any[] = [];
+  
+  //   // ---------------------------------------------
+  //   // Attach reference images
+  //   // ---------------------------------------------
+  //   if (heroRef.current?.base64) {
+  //     contents.push({ text: "REFERENCE 1 [HERO]:" });
+  //     contents.push({ inlineData: { mimeType: "image/jpeg", data: heroRef.current.base64 } });
+  //   }
+  //   if (friendRef.current?.base64) {
+  //     contents.push({ text: "REFERENCE 2 [CO-STAR]:" });
+  //     contents.push({ inlineData: { mimeType: "image/jpeg", data: friendRef.current.base64 } });
+  //   }
+  
+  //   // ---------------------------------------------
+  //   // 1) STYLE ANCHOR (from your reference prompts)
+  //   // ---------------------------------------------
+  //   const STYLE_ANCHORS = {
+  //     "Modern High-Fidelity Graphic Novel": `
+  //       Comic book art style, bold ink lines, vivid coloring, cel-shaded, dynamic composition,
+  //       high detail, cinematic lighting
+  //     `,
+  //     "Manga": `
+  //       Manga art style, black and white, screentones, ink wash, high contrast,
+  //       intricate linework, dramatic angles
+  //     `,
+  //     "Noir": `
+  //       Graphic novel style, Frank Miller aesthetic, chiaroscuro lighting,
+  //       heavy shadows, limited palette (black/white/red)
+  //     `
+  //   };
+  
+  //   const styleEra =
+  //     selectedGenre === "Custom"
+  //       ? "Modern High-Fidelity Graphic Novel"
+  //       : selectedGenre === "Sui Origin Story"
+  //       ? "Modern High-Fidelity Graphic Novel"
+  //       : selectedGenre;
+  
+  //   const styleAnchor = STYLE_ANCHORS[styleEra as keyof typeof STYLE_ANCHORS] || STYLE_ANCHORS["Modern High-Fidelity Graphic Novel"];
+  
+  //   let promptText = `
+  // STYLE ANCHOR:
+  // ${styleAnchor}
+  
+  // GLOBAL ART RULES:
+  // - Ultra-sharp line art, realistic anatomy.
+  // - Cinematic lighting consistent between panels.
+  // - Dynamic framing and camera movement.
+  // - No distortions, no surreal warping.
+  // - Consistent outfits, lighting, props, injuries.
+  // - Maintain strict likeness to reference images.
+  
+  // CHARACTER CONTINUITY:
+  // - HERO: Must ALWAYS match REFERENCE 1 (facial structure, hairstyle, vibe).
+  // - CO-STAR: Must ALWAYS match REFERENCE 2.
+  // - Do NOT alter age, facial anatomy, hair, or body type.
+  
+  // ENVIRONMENT CONTINUITY:
+  // - Keep backgrounds consistent unless the script explicitly changes scenes.
+  // - No random props or sudden environmental changes.
+  
+  // CAMERA DIRECTION:
+  // - Use cinematic angles (OTS, low-angle, wide shot, close-up).
+  // - Depth-of-field optional but should enhance drama.
+  
+  // PANEL COMPOSITION:
+  // - Clean, readable silhouettes.
+  // - Speech bubbles MUST NOT cover faces.
+  //   `;
+  
+  //   // ---------------------------------------------
+  //   // 2) TYPE-SPECIFIC PROMPT BUILDING
+  //   // ---------------------------------------------
+  //   if (type === "cover") {
+  //     const langName =
+  //       LANGUAGES.find((language) => language.code === selectedLanguage)?.name || "English";
+  //     const title =
+  //       selectedGenre === "Sui Origin Story" ? "SUI: THE ORIGIN" : "INFINITE HEROES";
+  
+  //     promptText += `
+  // TYPE: Comic Book Cover
+  // TITLE: "${title}" (or translated into ${langName.toUpperCase()})
+  // Main Visual: High-impact action portrait of HERO using REFERENCE 1.
+  // Epic pose. Cinematic lighting. Poster composition.
+  // AR: 3:2
+  //     `;
+  //   }
+  
+  //   else if (type === "back_cover") {
+  //     promptText += `
+  // TYPE: Back Cover
+  // Vertical full-page art.
+  // Dramatic atmosphere, teaser tone.
+  // Include small text: "NEXT ISSUE SOON".
+  // AR: 2:3
+  //     `;
+  //   }
+  
+  //   else {
+  //     // ---------------------------------------------
+  //     // 3) SCENE PANEL TYPES (Your Phase 3 integrations)
+  //     // ---------------------------------------------
+  
+  //     // Apply your extended templates
+  //     promptText += `
+  // TYPE: Comic Panel
+  
+  // SCENE DESCRIPTION:
+  // ${beat.scene}
+  
+  // LOGIC REQUIREMENTS:
+  // - Follow physical and story continuity.
+  // - If scene includes HERO -> use REFERENCE 1.
+  // - If scene includes CO-STAR or SIDEKICK -> use REFERENCE 2.
+  
+  // ${beat.caption ? `CAPTION BOX: "${beat.caption}"` : ""}
+  // ${beat.dialogue ? `SPEECH BUBBLE: "${beat.dialogue}"` : ""}
+  
+  // ---
+  
+  // OPTIONAL SCENE ENHANCEMENTS (AI chooses best fit):
+  
+  // 1) ACTION PANEL MODE:
+  // - Close-up or dynamic medium shot.
+  // - Motion lines, dramatic rim lighting.
+  
+  // 2) SPLIT-SCREEN MODE (Dialogue Scenes):
+  // - Left: HERO expression matching emotion.
+  // - Right: CO-STAR expression reacting logically.
+  // - Lightning bolt / energy divide if tension is high.
+  
+  // 3) FULL PAGE MINI-LAYOUT MODE:
+  // - Up to 3 micro-panels inside one frame if story benefits.
+  // - Clean gutters, clear storytelling.
+  
+  // ---
+  
+  // COMPOSITION:
+  // - Clear silhouette focus.
+  // - Keep faces unobstructed.
+  // - Lighting matches mood of the narrative.
+  //     `;
+  //   }
+  
+  //   contents.push({ text: promptText });
+  
+  //   // ---------------------------------------------
+  //   // Execute Model
+  //   // ---------------------------------------------
+  //   try {
+  //     const response = await runModel({
+  //       contents,
+  //       model: MODEL_IMAGE_GEN_NAME,
+  //       config: {
+  //         imageConfig: { aspectRatio: "2:3" }
+  //       }
+  //     });
+  
+  //     const part =
+  //       response.candidates?.[0]?.content?.parts?.find((p) => p.inlineData);
+  
+  //     return part?.inlineData?.data
+  //       ? `data:${part.inlineData.mimeType};base64,${part.inlineData.data}`
+  //       : "";
+  //   } catch (error) {
+  //     handleAPIError(error);
+  //     return "";
+  //   }
+  // };
+
   const updateFaceState = (id: string, updates: Partial<ComicFace>) => {
     setComicFaces((prev) => prev.map((face) => (face.id === id ? { ...face, ...updates } : face)));
     const index = historyRef.current.findIndex((face) => face.id === id);
     if (index !== -1) historyRef.current[index] = { ...historyRef.current[index], ...updates };
   };
 
-  const generateSinglePage = async (faceId: string, pageNum: number, type: ComicFace["type"]) => {
-    // Determine if decision page (disabled for Sui story)
-    const isSui = selectedGenre === "Sui Origin Story";
-    const isDecision = !isSui && DECISION_PAGES.includes(pageNum);
+  const generateSinglePage = async (faceId: string, pageNum: number, type: ComicFace["type"], retryCount = 0): Promise<void> => {
+    const MAX_RETRIES = 2;
+    
+    try {
+      // Determine if decision page (disabled for Sui story)
+      const isSui = selectedGenre === "Sui Origin Story";
+      const isDecision = !isSui && DECISION_PAGES.includes(pageNum);
     let beat: Beat = { scene: "", choices: [], focus_char: "other" };
 
     if (type === "cover") {
@@ -790,7 +1100,23 @@ OUTPUT STRICT JSON ONLY:
     } else if (type === "back_cover") {
       beat = { scene: "Thematic teaser image", choices: [], focus_char: "other" };
     } else {
+        try {
       beat = await generateBeat(historyRef.current, pageNum % 2 === 0, pageNum, isDecision);
+        } catch (error) {
+          console.error(`Failed to generate beat for page ${pageNum}:`, error);
+          if (retryCount < MAX_RETRIES) {
+            // Retry beat generation
+            await new Promise(resolve => setTimeout(resolve, 1000 * (retryCount + 1)));
+            return generateSinglePage(faceId, pageNum, type, retryCount + 1);
+          }
+          // Fallback beat if all retries fail
+          beat = { 
+            caption: pageNum === 1 ? "It began..." : "...", 
+            scene: `Generic scene for page ${pageNum}.`, 
+            focus_char: "hero", 
+            choices: [] 
+          };
+        }
     }
 
     if (beat.focus_char === "friend" && !friendRef.current && type === "story") {
@@ -803,8 +1129,42 @@ OUTPUT STRICT JSON ONLY:
     }
 
     updateFaceState(faceId, { narrative: beat, choices: beat.choices, isDecisionPage: isDecision });
-    const url = await generateImage(beat, type);
+      
+      // Generate image with retry logic
+      let url = "";
+      try {
+        url = await generateImage(beat, type);
+        if (!url && retryCount < MAX_RETRIES) {
+          // Retry image generation
+          console.log(`Retrying image generation for page ${pageNum}, attempt ${retryCount + 1}`);
+          await new Promise(resolve => setTimeout(resolve, 1000 * (retryCount + 1)));
+          url = await generateImage(beat, type);
+        }
+      } catch (error) {
+        console.error(`Failed to generate image for page ${pageNum}:`, error);
+        if (retryCount < MAX_RETRIES) {
+          await new Promise(resolve => setTimeout(resolve, 1000 * (retryCount + 1)));
+          return generateSinglePage(faceId, pageNum, type, retryCount + 1);
+        }
+      }
+
+      // Only update if we have a valid URL
+      if (url) {
     updateFaceState(faceId, { imageUrl: url, isLoading: false });
+      } else {
+        // Keep loading state if generation failed after retries
+        console.error(`Failed to generate image for page ${pageNum} after ${MAX_RETRIES + 1} attempts`);
+        updateFaceState(faceId, { isLoading: false });
+      }
+    } catch (error) {
+      console.error(`Error in generateSinglePage for page ${pageNum}:`, error);
+      if (retryCount < MAX_RETRIES) {
+        await new Promise(resolve => setTimeout(resolve, 1000 * (retryCount + 1)));
+        return generateSinglePage(faceId, pageNum, type, retryCount + 1);
+      }
+      // Mark as not loading if all retries failed
+      updateFaceState(faceId, { isLoading: false });
+    }
   };
 
   const generateBatch = async (startPage: number, count: number) => {
@@ -833,15 +1193,17 @@ OUTPUT STRICT JSON ONLY:
       if (!historyRef.current.find((entry) => entry.id === face.id)) historyRef.current.push(face);
     });
 
-    try {
+    // Generate pages with individual error handling to prevent one failure from stopping the batch
       for (const pageNum of pagesToGen) {
+      try {
         await generateSinglePage(`page-${pageNum}`, pageNum, pageNum === BACK_COVER_PAGE ? "back_cover" : "story");
+    } catch (error) {
+        console.error(`Error generating page ${pageNum}:`, error);
+        // Mark page as failed but continue with other pages
+        updateFaceState(`page-${pageNum}`, { isLoading: false });
+    } finally {
         generatingPages.current.delete(pageNum);
       }
-    } catch (error) {
-      console.error("Batch generation error", error);
-    } finally {
-      pagesToGen.forEach((page) => generatingPages.current.delete(page));
     }
   };
 
@@ -1026,12 +1388,14 @@ OUTPUT STRICT JSON ONLY:
         friend={friend}
         selectedGenre={selectedGenre}
         selectedLanguage={selectedLanguage}
+        selectedStory={selectedStory}
         customPremise={customPremise}
         richMode={richMode}
         onHeroUpload={handleHeroUpload}
         onFriendUpload={handleFriendUpload}
         onGenreChange={setSelectedGenre}
         onLanguageChange={setSelectedLanguage}
+        onStoryChange={setSelectedStory}
         onPremiseChange={setCustomPremise}
         onRichModeChange={setRichMode}
         onLaunch={launchStory}

@@ -33,7 +33,17 @@ export const Panel: React.FC<PanelProps> = ({
   return (
     <div className={`panel-container relative group ${isFullBleed ? "!p-0 !bg-[#0a0a0a]" : ""}`}>
       <div className="gloss" />
-      {face.imageUrl && <img src={face.imageUrl} alt="Comic panel" className={`panel-image ${isFullBleed ? "!object-cover" : ""}`} />}
+      {face.imageUrl ? (
+        <img src={face.imageUrl} alt="Comic panel" className={`panel-image ${isFullBleed ? "!object-cover" : ""}`} />
+      ) : (
+        // Show loading state if image failed to generate
+        <div className="w-full h-full flex items-center justify-center bg-gray-900 text-white">
+          <div className="text-center p-8">
+            <p className="font-comic text-xl mb-2">Generating...</p>
+            <p className="text-sm text-gray-400">Please wait</p>
+          </div>
+        </div>
+      )}
 
       {face.isDecisionPage && face.choices.length > 0 && (
         <div
@@ -67,8 +77,9 @@ export const Panel: React.FC<PanelProps> = ({
             className="comic-btn bg-yellow-400 px-10 py-4 text-3xl font-bold hover:scale-105 animate-bounce disabled:animate-none disabled:bg-gray-400 disabled:cursor-wait"
           >
             {!allFaces.find((f) => f.pageIndex === GATE_PAGE)?.imageUrl
-              ? `PRINTING... ${allFaces.filter((f) => f.type === "story" && f.imageUrl && (f.pageIndex || 0) <= GATE_PAGE).length
-              }/${INITIAL_PAGES}`
+              ? `PRINTING... ${
+                  allFaces.filter((f) => f.type === "story" && f.imageUrl && (f.pageIndex || 0) <= GATE_PAGE).length
+                }/${INITIAL_PAGES}`
               : "READ ISSUE #1"}
           </button>
         </div>
