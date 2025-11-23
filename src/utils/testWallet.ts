@@ -71,6 +71,9 @@ export const signAndExecuteTestTransaction = async (transaction: Transaction) =>
     throw new Error("Test wallet not available");
   }
 
+  // Set the sender
+  transaction.setSender(keypair.toSuiAddress());
+
   // Build the transaction
   const builtTx = await (transaction as any).build({ client });
 

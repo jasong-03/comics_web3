@@ -1,7 +1,7 @@
 export const MAX_STORY_PAGES = 21;
 export const BACK_COVER_PAGE = 22;
 export const TOTAL_PAGES = 22;
-export const INITIAL_PAGES = 2;
+export const INITIAL_PAGES = 4;
 export const GATE_PAGE = 2;
 export const BATCH_SIZE = 4; // Reduced slightly due to higher page count to prevent timeouts
 export const DECISION_PAGES = [3];

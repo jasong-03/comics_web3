@@ -7,6 +7,7 @@
     "@google/genai": "^1.30.0",
     "@mysten/dapp-kit": "^0.19.9",
     "@mysten/sui": "^1.45.0",
+    "@mysten/walrus": "^0.8.4",
     "@tanstack/react-query": "^5.90.9",
     "@tanstack/react-query-devtools": "^5.90.2",
     "@testing-library/dom": "^10.4.1",

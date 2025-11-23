@@ -23,6 +23,8 @@ import { ApiKeyDialog } from "./ApiKeyDialog";
 import { NoteOverlay } from "./NoteOverlay";
 import "./comics.css";
 import { useInfiniteHeroes } from "../hooks/useInfiniteHeroes";
+import { base64ToBlob, uploadToWalrus } from "../utils/walrus";
+import { compressImage } from "../utils/image";
 
 const MODEL_IMAGE_GEN_NAME = "gemini-3-pro-image-preview";
 const MODEL_TEXT_NAME = "gemini-2.5-flash";
@@ -48,6 +50,7 @@ export const ComicsApp: React.FC = () => {
   const [heroMinted, setHeroMinted] = useState(false);
   const [isMintingComic, setIsMintingComic] = useState(false);
   const [comicMinted, setComicMinted] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
   const [heroId, setHeroId] = useState<string | null>(null);
   const [suiStorySegments, setSuiStorySegments] = useState<string[]>([]);
 
@@ -1306,10 +1309,31 @@ OUTPUT STRICT JSON ONLY:
   const handleMintHero = async () => {
     if (!heroRef.current || !heroRef.current.base64) return;
     setIsMintingHero(true);
+    setUploadProgress(0);
+
+    // Simulate progress
+    const progressInterval = setInterval(() => {
+      setUploadProgress((prev) => {
+        if (prev >= 90) return prev;
+        return prev + 10;
+      });
+    }, 500);
+
     try {
-      // Mock blob ID for now since we don't have Walrus integration in frontend yet
-      const mockBlobId = "0x0000000000000000000000000000000000000000000000000000000000000000";
-      const response = await mintHero("My Hero", mockBlobId, "https://example.com/metadata.json");
+      // 1. Upload to Walrus
+      console.log("Compressing image...");
+      const compressedBase64 = await compressImage(heroRef.current.base64);
+
+      console.log("Uploading to Walrus...");
+      const blob = base64ToBlob(compressedBase64);
+      const { blobId, blobUrl } = await uploadToWalrus(blob);
+      console.log("Uploaded to Walrus:", blobId, blobUrl);
+
+      clearInterval(progressInterval);
+      setUploadProgress(100);
+
+      // 2. Mint on Sui
+      const response = await mintHero("My Hero", blobId, blobUrl);
       console.log("Hero Minted:", response);
       setHeroMinted(true);
       // Extract object ID from response if possible, or just assume success for now
@@ -1332,7 +1356,34 @@ OUTPUT STRICT JSON ONLY:
     }
     setIsMintingComic(true);
     try {
-      const mockBlobId = "0x0000000000000000000000000000000000000000000000000000000000000000";
+      // 1. Prepare Comic Data
+      const validPages = comicFaces.filter(face => face.imageUrl && !face.isLoading);
+      if (validPages.length === 0) {
+        alert("No pages generated yet!");
+        setIsMintingComic(false);
+        return;
+      }
+
+      const comicData = {
+        title: "Infinite Heroes Issue #1",
+        genre: selectedGenre,
+        heroId: heroId || "0x0",
+        pages: validPages.map(page => ({
+          pageIndex: page.pageIndex,
+          imageUrl: page.imageUrl,
+          narrative: page.narrative
+        })),
+        timestamp: Date.now()
+      };
+
+      // 2. Upload to Walrus
+      console.log("Uploading comic data to Walrus...");
+      const jsonString = JSON.stringify(comicData);
+      const blob = new TextEncoder().encode(jsonString); // Convert string to Uint8Array
+      const { blobId, blobUrl } = await uploadToWalrus(blob);
+      console.log("Comic Data Uploaded:", blobId, blobUrl);
+
+      // 3. Mint Comic
       const coverFace = comicFaces.find(f => f.type === "cover");
       const coverUrl = coverFace?.imageUrl || "https://example.com/cover.jpg";
 
@@ -1341,10 +1392,11 @@ OUTPUT STRICT JSON ONLY:
         "Infinite Heroes Issue #1",
         selectedGenre,
         coverUrl,
-        mockBlobId
+        blobId // Real Blob ID
       );
       console.log("Comic Minted:", response);
       setComicMinted(true);
+      alert("Comic Minted Successfully! Blob ID: " + blobId);
     } catch (error) {
       console.error("Mint comic failed", error);
       alert("Failed to mint comic. See console.");
@@ -1402,6 +1454,7 @@ OUTPUT STRICT JSON ONLY:
         onMintHero={handleMintHero}
         isMinting={isMintingHero}
         heroMinted={heroMinted}
+        uploadProgress={uploadProgress}
       />
 
       <div className="comic-scene">

@@ -22,6 +22,7 @@ interface SetupProps {
   onMintHero: () => void;
   isMinting: boolean;
   heroMinted: boolean;
+  uploadProgress: number;
 }
 
 const Footer = () => {
@@ -178,13 +179,26 @@ export const Setup: React.FC<SetupProps> = (props) => {
                   )}
 
                   {props.hero && !props.heroMinted && (
-                    <button
-                      onClick={props.onMintHero}
-                      disabled={props.isMinting}
-                      className="mt-2 w-full comic-btn bg-neon-lime text-black text-sm px-3 py-2 hover:bg-green-400 disabled:bg-gray-400 uppercase font-bold"
-                    >
-                      {props.isMinting ? "MINTING..." : "MINT HERO ON SUI"}
-                    </button>
+                    <div className="mt-2 w-full">
+                      {props.isMinting ? (
+                        <div className="w-full bg-gray-200 h-8 border-2 border-black relative">
+                          <div
+                            className="h-full bg-neon-lime transition-all duration-300"
+                            style={{ width: `${props.uploadProgress}%` }}
+                          />
+                          <div className="absolute inset-0 flex items-center justify-center text-xs font-bold uppercase">
+                            {props.uploadProgress < 100 ? "Uploading to Walrus..." : "Minting on Sui..."}
+                          </div>
+                        </div>
+                      ) : (
+                        <button
+                          onClick={props.onMintHero}
+                          className="w-full comic-btn bg-neon-lime text-black text-sm px-3 py-2 hover:bg-green-400 disabled:bg-gray-400 uppercase font-bold"
+                        >
+                          MINT HERO ON SUI
+                        </button>
+                      )}
+                    </div>
                   )}
                   {props.heroMinted && (
                     <div className="mt-2 w-full bg-black text-neon-lime text-center font-bold font-comic border-2 border-neon-lime py-1">
@@ -319,13 +333,20 @@ export const Setup: React.FC<SetupProps> = (props) => {
               </div>
             </div>
 
-            <button
-              onClick={props.onLaunch}
-              disabled={!props.hero || props.isTransitioning}
-              className="comic-btn bg-red-600 text-white text-3xl px-6 py-3 w-full hover:bg-red-500 disabled:bg-gray-400 disabled:cursor-not-allowed uppercase tracking-wider"
-            >
-              {props.isTransitioning ? "LAUNCHING..." : "START ADVENTURE!"}
-            </button>
+            <div className="relative group/start">
+              <button
+                onClick={props.onLaunch}
+                disabled={!props.hero || (!!props.hero && !props.heroMinted) || props.isTransitioning}
+                className="comic-btn bg-red-600 text-white text-3xl px-6 py-3 w-full hover:bg-red-500 disabled:bg-gray-400 disabled:cursor-not-allowed uppercase tracking-wider"
+              >
+                {props.isTransitioning ? "LAUNCHING..." : "START ADVENTURE!"}
+              </button>
+              {props.hero && !props.heroMinted && (
+                <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-max bg-black text-white text-sm px-3 py-1 rounded font-comic opacity-0 group-hover/start:opacity-100 transition-opacity pointer-events-none">
+                  Please mint your hero first!
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div >
