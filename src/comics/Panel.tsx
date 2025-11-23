@@ -80,7 +80,7 @@ export const Panel: React.FC<PanelProps> = ({
               ? `PRINTING... ${
                   allFaces.filter((f) => f.type === "story" && f.imageUrl && (f.pageIndex || 0) <= GATE_PAGE).length
                 }/${INITIAL_PAGES}`
-              : "READ ISSUE #1"}
+              : "READ COMICS"}
           </button>
         </div>
       )}

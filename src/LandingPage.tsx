@@ -247,10 +247,45 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnter }) => {
             {/* --- GALLERY / MARQUEE REVERSE --- */}
             <section className="py-12 bg-brand-dark overflow-hidden border-y-8 border-neon-pink">
                 <div className="animate-marquee-reverse whitespace-nowrap">
-                    {[...Array(10)].map((_, i) => (
-                        <div key={i} className="inline-block mx-4 w-64 h-64 bg-gray-800 border-4 border-white shadow-[8px_8px_0px_#CCFF00] relative group cursor-pointer hover:scale-105 transition-transform">
-                            <div className="absolute inset-0 flex items-center justify-center text-white font-display text-2xl opacity-50 group-hover:opacity-100">
-                                COMIC #{i + 1}
+                    {[1, 2, 3, 4, 5, 6, 7].map((num) => (
+                        <div key={num} className="inline-block mx-4 w-64 h-64 border-4 border-white shadow-[8px_8px_0px_#CCFF00] relative group cursor-pointer hover:scale-105 transition-transform overflow-hidden bg-gray-800">
+                            <img 
+                                src={`/comics-${num}.jpeg`} 
+                                alt={`Comic #${num}`}
+                                className="w-full h-full object-cover group-hover:opacity-90 transition-opacity"
+                                onError={(e) => {
+                                    // Fallback to placeholder if image fails to load
+                                    const target = e.target as HTMLImageElement;
+                                    target.style.display = 'none';
+                                    const placeholder = target.parentElement?.querySelector('.placeholder');
+                                    if (placeholder) {
+                                        (placeholder as HTMLElement).style.display = 'flex';
+                                    }
+                                }}
+                            />
+                            <div className="placeholder absolute inset-0 flex items-center justify-center text-white font-display text-2xl opacity-50 group-hover:opacity-100" style={{ display: 'none' }}>
+                                COMIC #{num}
+                            </div>
+                        </div>
+                    ))}
+                    {/* Duplicate for seamless loop */}
+                    {[1, 2, 3, 4, 5, 6, 7].map((num) => (
+                        <div key={`duplicate-${num}`} className="inline-block mx-4 w-64 h-64 border-4 border-white shadow-[8px_8px_0px_#CCFF00] relative group cursor-pointer hover:scale-105 transition-transform overflow-hidden bg-gray-800">
+                            <img 
+                                src={`/comics-${num}.jpeg`} 
+                                alt={`Comic #${num}`}
+                                className="w-full h-full object-cover group-hover:opacity-90 transition-opacity"
+                                onError={(e) => {
+                                    const target = e.target as HTMLImageElement;
+                                    target.style.display = 'none';
+                                    const placeholder = target.parentElement?.querySelector('.placeholder');
+                                    if (placeholder) {
+                                        (placeholder as HTMLElement).style.display = 'flex';
+                                    }
+                                }}
+                            />
+                            <div className="placeholder absolute inset-0 flex items-center justify-center text-white font-display text-2xl opacity-50 group-hover:opacity-100" style={{ display: 'none' }}>
+                                COMIC #{num}
                             </div>
                         </div>
                     ))}

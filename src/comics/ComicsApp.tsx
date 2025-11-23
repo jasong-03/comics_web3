@@ -48,6 +48,7 @@ export const ComicsApp: React.FC = () => {
   const [heroMinted, setHeroMinted] = useState(false);
   const [isMintingComic, setIsMintingComic] = useState(false);
   const [comicMinted, setComicMinted] = useState(false);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [heroId, setHeroId] = useState<string | null>(null);
   const [suiStorySegments, setSuiStorySegments] = useState<string[]>([]);
 
@@ -1372,7 +1373,7 @@ OUTPUT STRICT JSON ONLY:
   const rightNote = (
     <div>
       <div className="note-title">Need help?</div>
-      <div className="note-text">Upload a hero image to start, then tap “Read Issue #1”.</div>
+      <div className="note-text">Upload a hero image to start, then tap “Read Comics”.</div>
     </div>
   );
 
