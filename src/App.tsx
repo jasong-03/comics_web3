@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { LandingPage } from "./LandingPage";
 import { ComicsApp } from "./comics/ComicsApp";
+import { Inventory } from "./Inventory";
 import { TestModeToggle } from "./components/TestModeToggle";
 
+type View = "landing" | "comics" | "inventory";
+
 function App() {
-  const [showComics, setShowComics] = useState(false);
+  const [currentView, setCurrentView] = useState<View>("landing");
 
   // Auto-enable test mode if not already set (for Cursor browser)
   useEffect(() => {
@@ -13,7 +16,7 @@ function App() {
     }
   }, []);
 
-  if (showComics) {
+  if (currentView === "comics") {
     return (
       <>
         <TestModeToggle />
@@ -22,10 +25,22 @@ function App() {
     );
   }
 
+  if (currentView === "inventory") {
+    return (
+      <>
+        <TestModeToggle />
+        <Inventory onBack={() => setCurrentView("landing")} />
+      </>
+    );
+  }
+
   return (
     <>
       <TestModeToggle />
-      <LandingPage onEnter={() => setShowComics(true)} />
+      <LandingPage 
+        onEnter={() => setCurrentView("comics")}
+        onViewInventory={() => setCurrentView("inventory")}
+      />
     </>
   );
 }

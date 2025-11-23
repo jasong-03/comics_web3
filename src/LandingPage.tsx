@@ -9,10 +9,10 @@ import { useTestAccount } from './hooks/useTestWallet';
 
 interface LandingPageProps {
     onEnter: () => void;
+    onViewInventory?: () => void;
 }
 
-export const LandingPage: React.FC<LandingPageProps> = ({ onEnter }) => {
-    const scrollRef = useRef<HTMLDivElement>(null);
+export const LandingPage: React.FC<LandingPageProps> = ({ onEnter, onViewInventory }) => {
     const audioRef = useRef<HTMLAudioElement>(null);
     const [isPlaying, setIsPlaying] = useState(false);
     const account = useTestAccount();
@@ -147,14 +147,24 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnter }) => {
                 </p>
 
                 {account ? (
-                    <button
-                        onClick={onEnter}
-                        className="mt-16 group relative inline-flex items-center justify-center px-12 py-6 text-3xl font-display font-bold text-white transition-all duration-200 bg-brand-dark border-4 border-brand-dark focus:outline-none focus:ring-4 focus:ring-neon-lime focus:ring-offset-4 hover:bg-neon-pink hover:text-brand-dark hover:shadow-hard-lime hover:-translate-y-2 active:translate-y-0 active:shadow-none"
-                    >
-                        <span className="absolute inset-0 w-full h-full -mt-1 rounded-lg opacity-30 bg-gradient-to-b from-transparent via-transparent to-gray-700"></span>
-                        <span className="relative">CREATE COMICS NOW</span>
-                        <svg className="w-8 h-8 ml-4 transition-transform duration-200 group-hover:translate-x-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="4" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
-                    </button>
+                    <div className="mt-16 flex flex-col items-center gap-4">
+                        <button
+                            onClick={onEnter}
+                            className="group relative inline-flex items-center justify-center px-12 py-6 text-3xl font-display font-bold text-white transition-all duration-200 bg-brand-dark border-4 border-brand-dark focus:outline-none focus:ring-4 focus:ring-neon-lime focus:ring-offset-4 hover:bg-neon-pink hover:text-brand-dark hover:shadow-hard-lime hover:-translate-y-2 active:translate-y-0 active:shadow-none"
+                        >
+                            <span className="absolute inset-0 w-full h-full -mt-1 rounded-lg opacity-30 bg-gradient-to-b from-transparent via-transparent to-gray-700"></span>
+                            <span className="relative">CREATE COMICS NOW</span>
+                            <svg className="w-8 h-8 ml-4 transition-transform duration-200 group-hover:translate-x-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="4" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                        </button>
+                        {onViewInventory && (
+                            <button
+                                onClick={onViewInventory}
+                                className="px-8 py-3 text-xl font-display font-bold text-brand-dark transition-all duration-200 bg-neon-lime border-4 border-brand-dark shadow-hard hover:shadow-hard-pink hover:scale-105 hover:-translate-y-1"
+                            >
+                                📚 VIEW INVENTORY
+                            </button>
+                        )}
+                    </div>
                 ) : (
                     <div className="mt-16 flex flex-col items-center gap-6">
                         <p className="text-xl font-bold bg-white border-4 border-brand-dark px-6 py-2 shadow-hard rotate-1">
@@ -385,12 +395,22 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnter }) => {
                     READY TO ENTER THE <span className="text-white text-stroke-black">MULTIVERSE?</span>
                 </h2>
                 {account ? (
-                    <button
-                        onClick={onEnter}
-                        className="text-2xl md:text-4xl font-bold bg-white border-4 border-brand-dark px-12 py-6 shadow-hard hover:bg-brand-dark hover:text-white hover:shadow-hard-pink transition-all hover:-rotate-2"
-                    >
-                        START GENERATING &rarr;
-                    </button>
+                    <div className="flex flex-col md:flex-row gap-4 items-center">
+                        <button
+                            onClick={onEnter}
+                            className="text-2xl md:text-4xl font-bold bg-white border-4 border-brand-dark px-12 py-6 shadow-hard hover:bg-brand-dark hover:text-white hover:shadow-hard-pink transition-all hover:-rotate-2"
+                        >
+                            START GENERATING &rarr;
+                        </button>
+                        {onViewInventory && (
+                            <button
+                                onClick={onViewInventory}
+                                className="text-xl md:text-2xl font-bold bg-brand-dark text-white border-4 border-white px-8 py-4 shadow-hard hover:bg-neon-pink hover:text-brand-dark hover:shadow-hard-lime transition-all hover:rotate-2"
+                            >
+                                📚 VIEW INVENTORY
+                            </button>
+                        )}
+                    </div>
                 ) : (
                     <div className="scale-125 border-4 border-brand-dark shadow-hard bg-white">
                         <ConnectButton />

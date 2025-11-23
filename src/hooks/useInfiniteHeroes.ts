@@ -1,11 +1,9 @@
-import { useSuiClient } from "@mysten/dapp-kit";
 import { Transaction } from "@mysten/sui/transactions";
 import { networkConfig } from "../config";
 import { useTestAccount, useTestSignAndExecute } from "./useTestWallet";
 import { base64UrlToBigInt } from "../utils/walrus";
 
 export const useInfiniteHeroes = () => {
-    const client = useSuiClient();
     const account = useTestAccount();
     const { mutateAsync: signAndExecute } = useTestSignAndExecute();
 
