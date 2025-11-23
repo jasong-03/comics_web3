@@ -7,8 +7,36 @@ import "@mysten/dapp-kit/dist/index.css";
 import "./index.css";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
+import { ErrorBoundary } from "./ErrorBoundary";
 
 const queryClient = new QueryClient();
+
+// AGGRESSIVE ERROR SUPPRESSION
+// Must be before any other imports that might trigger side effects
+const suppressError = (msg: any) => {
+  const str = String(msg);
+  return str.includes("Key ring is empty") || str.includes("Extension context invalidated");
+};
+
+const originalConsoleError = console.error;
+console.error = (...args) => {
+  if (args.some(arg => suppressError(arg?.message || arg))) return;
+  originalConsoleError(...args);
+};
+
+window.addEventListener("unhandledrejection", (event) => {
+  if (suppressError(event.reason?.message || event.reason)) {
+    event.preventDefault();
+    event.stopImmediatePropagation();
+  }
+});
+
+window.addEventListener("error", (event) => {
+  if (suppressError(event.message || event.error)) {
+    event.preventDefault();
+    event.stopImmediatePropagation();
+  }
+});
 
 const networkConfig = {
   mainnet: { url: getFullnodeUrl("mainnet") },
@@ -23,7 +51,9 @@ root.render(
     <QueryClientProvider client={queryClient}>
       <SuiClientProvider defaultNetwork="testnet" networks={networkConfig}>
         <WalletProvider autoConnect>
-          <App />
+          <ErrorBoundary>
+            <App />
+          </ErrorBoundary>
         </WalletProvider>
       </SuiClientProvider>
     </QueryClientProvider>

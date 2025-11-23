@@ -12,6 +12,9 @@ interface BookProps {
   onOpenBook: () => void;
   onDownload: () => void;
   onReset: () => void;
+  onMintComic: () => void;
+  isMintingComic: boolean;
+  comicMinted: boolean;
 }
 
 export const Book: React.FC<BookProps> = ({
@@ -24,6 +27,9 @@ export const Book: React.FC<BookProps> = ({
   onOpenBook,
   onDownload,
   onReset,
+  onMintComic,
+  isMintingComic,
+  comicMinted,
 }) => {
   const sheetsToRender: { front?: ComicFace; back?: ComicFace }[] = [];
 
@@ -49,10 +55,10 @@ export const Book: React.FC<BookProps> = ({
       style={
         isSetupVisible
           ? {
-              transform: "translateZ(-600px) translateY(-100px) rotateX(20deg) scale(0.9)",
-              filter: "blur(6px) brightness(0.7)",
-              pointerEvents: "none",
-            }
+            transform: "translateZ(-600px) translateY(-100px) rotateX(20deg) scale(0.9)",
+            filter: "blur(6px) brightness(0.7)",
+            pointerEvents: "none",
+          }
           : {}
       }
     >
@@ -71,6 +77,9 @@ export const Book: React.FC<BookProps> = ({
               onOpenBook={onOpenBook}
               onDownload={onDownload}
               onReset={onReset}
+              onMintComic={onMintComic}
+              isMintingComic={isMintingComic}
+              comicMinted={comicMinted}
             />
           </div>
           <div className="back">
@@ -81,6 +90,9 @@ export const Book: React.FC<BookProps> = ({
               onOpenBook={onOpenBook}
               onDownload={onDownload}
               onReset={onReset}
+              onMintComic={onMintComic}
+              isMintingComic={isMintingComic}
+              comicMinted={comicMinted}
             />
           </div>
         </div>

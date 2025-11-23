@@ -17,6 +17,9 @@ interface SetupProps {
   onPremiseChange: (val: string) => void;
   onRichModeChange: (val: boolean) => void;
   onLaunch: () => void;
+  onMintHero: () => void;
+  isMinting: boolean;
+  heroMinted: boolean;
 }
 
 const Footer = () => {
@@ -135,9 +138,8 @@ export const Setup: React.FC<SetupProps> = (props) => {
                 <div className="font-comic text-xl text-black border-b-4 border-black mb-1">1. THE CAST</div>
 
                 <div
-                  className={`p-3 border-4 border-dashed ${
-                    props.hero ? "border-green-500 bg-green-50" : "border-blue-300 bg-blue-50"
-                  } transition-colors relative group`}
+                  className={`p-3 border-4 border-dashed ${props.hero ? "border-green-500 bg-green-50" : "border-blue-300 bg-blue-50"
+                    } transition-colors relative group`}
                 >
                   <div className="flex justify-between items-center mb-1">
                     <p className="font-comic text-lg uppercase font-bold text-blue-900">HERO (REQUIRED)</p>
@@ -172,12 +174,26 @@ export const Setup: React.FC<SetupProps> = (props) => {
                       />
                     </label>
                   )}
+
+                  {props.hero && !props.heroMinted && (
+                    <button
+                      onClick={props.onMintHero}
+                      disabled={props.isMinting}
+                      className="mt-2 w-full comic-btn bg-neon-lime text-black text-sm px-3 py-2 hover:bg-green-400 disabled:bg-gray-400 uppercase font-bold"
+                    >
+                      {props.isMinting ? "MINTING..." : "MINT HERO ON SUI"}
+                    </button>
+                  )}
+                  {props.heroMinted && (
+                    <div className="mt-2 w-full bg-black text-neon-lime text-center font-bold font-comic border-2 border-neon-lime py-1">
+                      HERO MINTED ON-CHAIN
+                    </div>
+                  )}
                 </div>
 
                 <div
-                  className={`p-3 border-4 border-dashed ${
-                    props.friend ? "border-green-500 bg-green-50" : "border-purple-300 bg-purple-50"
-                  } transition-colors`}
+                  className={`p-3 border-4 border-dashed ${props.friend ? "border-green-500 bg-green-50" : "border-purple-300 bg-purple-50"
+                    } transition-colors`}
                 >
                   <div className="flex justify-between items-center mb-1">
                     <p className="font-comic text-lg uppercase font-bold text-purple-900">CO-STAR (OPTIONAL)</p>
@@ -289,7 +305,7 @@ export const Setup: React.FC<SetupProps> = (props) => {
             </button>
           </div>
         </div>
-      </div>
+      </div >
 
       <Footer />
     </>

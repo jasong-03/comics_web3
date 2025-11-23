@@ -9,9 +9,22 @@ interface PanelProps {
   onOpenBook: () => void;
   onDownload: () => void;
   onReset: () => void;
+  onMintComic: () => void;
+  isMintingComic: boolean;
+  comicMinted: boolean;
 }
 
-export const Panel: React.FC<PanelProps> = ({ face, allFaces, onChoice, onOpenBook, onDownload, onReset }) => {
+export const Panel: React.FC<PanelProps> = ({
+  face,
+  allFaces,
+  onChoice,
+  onOpenBook,
+  onDownload,
+  onReset,
+  onMintComic,
+  isMintingComic,
+  comicMinted,
+}) => {
   if (!face) return <div className="w-full h-full bg-gray-950" />;
   if (face.isLoading && !face.imageUrl) return <LoadingFX />;
 
@@ -24,9 +37,8 @@ export const Panel: React.FC<PanelProps> = ({ face, allFaces, onChoice, onOpenBo
 
       {face.isDecisionPage && face.choices.length > 0 && (
         <div
-          className={`absolute bottom-0 inset-x-0 p-6 pb-12 flex flex-col gap-3 items-center justify-end transition-opacity duration-500 ${
-            face.resolvedChoice ? "opacity-0 pointer-events-none" : "opacity-100"
-          } bg-gradient-to-t from-black/90 via-black/50 to-transparent z-20`}
+          className={`absolute bottom-0 inset-x-0 p-6 pb-12 flex flex-col gap-3 items-center justify-end transition-opacity duration-500 ${face.resolvedChoice ? "opacity-0 pointer-events-none" : "opacity-100"
+            } bg-gradient-to-t from-black/90 via-black/50 to-transparent z-20`}
         >
           <p className="text-white font-comic text-2xl uppercase tracking-widest animate-pulse">What drives you?</p>
           {face.choices.map((choice, i) => (
@@ -55,9 +67,8 @@ export const Panel: React.FC<PanelProps> = ({ face, allFaces, onChoice, onOpenBo
             className="comic-btn bg-yellow-400 px-10 py-4 text-3xl font-bold hover:scale-105 animate-bounce disabled:animate-none disabled:bg-gray-400 disabled:cursor-wait"
           >
             {!allFaces.find((f) => f.pageIndex === GATE_PAGE)?.imageUrl
-              ? `PRINTING... ${
-                  allFaces.filter((f) => f.type === "story" && f.imageUrl && (f.pageIndex || 0) <= GATE_PAGE).length
-                }/${INITIAL_PAGES}`
+              ? `PRINTING... ${allFaces.filter((f) => f.type === "story" && f.imageUrl && (f.pageIndex || 0) <= GATE_PAGE).length
+              }/${INITIAL_PAGES}`
               : "READ ISSUE #1"}
           </button>
         </div>
@@ -74,6 +85,24 @@ export const Panel: React.FC<PanelProps> = ({ face, allFaces, onChoice, onOpenBo
           >
             DOWNLOAD ISSUE
           </button>
+
+          {!comicMinted && (
+            <button
+              onClick={(event) => {
+                event.stopPropagation();
+                onMintComic();
+              }}
+              disabled={isMintingComic}
+              className="comic-btn bg-neon-lime text-black px-8 py-3 text-xl font-bold hover:scale-105 disabled:bg-gray-400"
+            >
+              {isMintingComic ? "MINTING..." : "MINT ON SUI"}
+            </button>
+          )}
+          {comicMinted && (
+            <div className="bg-black text-neon-lime px-8 py-2 text-xl font-bold border-2 border-neon-lime">
+              MINTED ON-CHAIN
+            </div>
+          )}
           <button
             onClick={(event) => {
               event.stopPropagation();

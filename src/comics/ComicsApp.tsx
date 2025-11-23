@@ -21,6 +21,7 @@ import { useApiKey } from "./useApiKey";
 import { ApiKeyDialog } from "./ApiKeyDialog";
 import { NoteOverlay } from "./NoteOverlay";
 import "./comics.css";
+import { useInfiniteHeroes } from "../hooks/useInfiniteHeroes";
 
 const MODEL_IMAGE_GEN_NAME = "gemini-3-pro-image-preview";
 const MODEL_TEXT_NAME = "gemini-2.5-flash";
@@ -118,6 +119,13 @@ export const ComicsApp: React.FC = () => {
   const [isStarted, setIsStarted] = useState(false);
   const [showSetup, setShowSetup] = useState(true);
   const [isTransitioning, setIsTransitioning] = useState(false);
+  const [isMintingHero, setIsMintingHero] = useState(false);
+  const [heroMinted, setHeroMinted] = useState(false);
+  const [isMintingComic, setIsMintingComic] = useState(false);
+  const [comicMinted, setComicMinted] = useState(false);
+  const [heroId, setHeroId] = useState<string | null>(null);
+
+  const { mintHero, mintComic } = useInfiniteHeroes();
 
   const heroRef = useRef<Persona | null>(null);
   const friendRef = useRef<Persona | null>(null);
@@ -220,7 +228,7 @@ export const ComicsApp: React.FC = () => {
     if (isSuiStory) {
       const segmentIndex = pageNum - 1;
       const segmentText = SUI_STORY_SEGMENTS[segmentIndex] || "The story continues into the future...";
-      
+
       const prompt = `
 You are a master visual storyteller adapting a historical tech narrative into a comic book.
 PAGE ${pageNum} of ${MAX_STORY_PAGES}.
@@ -255,7 +263,7 @@ OUTPUT JSON ONLY:
         let rawText = response.text || "{}";
         rawText = rawText.replace(/```json/g, "").replace(/```/g, "").trim();
         const parsed = JSON.parse(rawText);
-        
+
         // Clean up
         if (parsed.dialogue) parsed.dialogue = parsed.dialogue.replace(/^[\w\s-]+:\s*/i, "").replace(/["']/g, "").trim();
         if (parsed.caption) parsed.caption = parsed.caption.replace(/^[\w\s-]+:\s*/i, "").trim();
@@ -280,10 +288,8 @@ OUTPUT JSON ONLY:
     const historyText = relevantHistory
       .map(
         (panel) =>
-          `[Page ${panel.pageIndex}] [Focus: ${panel.narrative?.focus_char}] (Caption: "${panel.narrative?.caption || ""}") (Dialogue: "${
-            panel.narrative?.dialogue || ""
-          }") (Scene: ${panel.narrative?.scene}) ${
-            panel.resolvedChoice ? `-> USER CHOICE: "${panel.resolvedChoice}"` : ""
+          `[Page ${panel.pageIndex}] [Focus: ${panel.narrative?.focus_char}] (Caption: "${panel.narrative?.caption || ""}") (Dialogue: "${panel.narrative?.dialogue || ""
+          }") (Scene: ${panel.narrative?.scene}) ${panel.resolvedChoice ? `-> USER CHOICE: "${panel.resolvedChoice}"` : ""
           }`,
       )
       .join("\n");
@@ -457,7 +463,7 @@ OUTPUT STRICT JSON ONLY:
   // PROMPT 2: Enhanced Global Instructions (applies to ALL image types)
   // const generateImage = async (beat: Beat, type: ComicFace["type"]): Promise<string> => {
   //   const contents: any[] = [];
-  
+
   //   // Push reference images
   //   if (heroRef.current?.base64) {
   //     contents.push({ text: "REFERENCE 1 [HERO]:" });
@@ -467,15 +473,15 @@ OUTPUT STRICT JSON ONLY:
   //     contents.push({ text: "REFERENCE 2 [CO-STAR]:" });
   //     contents.push({ inlineData: { mimeType: "image/jpeg", data: friendRef.current.base64 } });
   //   }
-  
+
   //   // Style + Era
   //   const styleEra =
   //     selectedGenre === "Custom" || selectedGenre === "Sui Origin Story"
   //       ? "Modern High-Fidelity Graphic Novel"
   //       : selectedGenre;
-  
+
   //   let promptText = `STYLE: ${styleEra}, high-detail line art, realistic anatomy, cinematic lighting, consistent color grading. `;
-  
+
   //   // ============================================================
   //   // ENHANCED GLOBAL INSTRUCTIONS (applies to ALL image types)
   //   // ============================================================
@@ -484,39 +490,39 @@ OUTPUT STRICT JSON ONLY:
   // - Ultra-sharp line art, realistic anatomy, polished shading.
   // - Cinematic lighting consistent between panels.
   // - No distortion of faces or bodies.
-  
+
   // CHARACTER BIBLE:
   // - HERO: Maintain strict likeness with REFERENCE 1 (facial structure, hairstyle, vibe, skin tone).
   // - CO-STAR: Maintain likeness with REFERENCE 2.
   // - Do NOT age, deform, or alter facial structure unless explicitly stated.
-  
+
   // SCENE CONTINUITY:
   // - Keep outfits, lighting, props, injuries, and environment consistent.
   // - Maintain continuity with previous panels even if not shown.
   // - Character physical placement must follow logical spatial movement.
-  
+
   // CAMERA DIRECTION:
   // - Use cinematic angles: low-angle, over-the-shoulder, medium shot, dynamic framing.
   // - Apply depth-of-field when appropriate.
-  
+
   // ENVIRONMENT RULES:
   // - Background must remain consistent unless script explicitly changes.
   // - No random new elements.
-  
+
   // EMOTION CONTROL:
   // - Expressions must reflect the emotional tone of the scene.
   // - Use subtle micro-expressions for realism.
-  
+
   // PANEL COMPOSITION:
   // - Clean framing, avoid clutter.
   // - Do NOT cover character faces with speech bubbles or captions.
   // - Clear silhouette readability.
-  
+
   // GENERAL RULES:
   // - Maintain strict character likeness with references at all times.
   // - High visual logic: no teleporting, no inconsistent props, no changing outfits unless stated.
   // `;
-  
+
   //   // ============================================================
   //   // TYPE: COVER / BACK COVER / PANEL
   //   // ============================================================
@@ -525,7 +531,7 @@ OUTPUT STRICT JSON ONLY:
   //       LANGUAGES.find((language) => language.code === selectedLanguage)?.name || "English";
   //     const title =
   //       selectedGenre === "Sui Origin Story" ? "SUI: THE ORIGIN" : "INFINITE HEROES";
-  
+
   //     promptText += `
   // TYPE: Comic Book Cover.
   // TITLE: "${title}" (OR TRANSLATION IN ${langName.toUpperCase()}).
@@ -534,7 +540,7 @@ OUTPUT STRICT JSON ONLY:
   // ${GLOBAL_ENHANCE}
   //     `;
   //   }
-  
+
   //   else if (type === "back_cover") {
   //     promptText += `
   // TYPE: Comic Back Cover.
@@ -544,29 +550,29 @@ OUTPUT STRICT JSON ONLY:
   // ${GLOBAL_ENHANCE}
   //     `;
   //   }
-  
+
   //   else {
   //     // PANEL GENERATION (Main)
   //     promptText += `
   // TYPE: Vertical comic panel.
-  
+
   // SCENE DESCRIPTION:
   // ${beat.scene}
-  
+
   // INSTRUCTIONS:
   // - Maintain strict likeness for any mention of HERO (use REFERENCE 1).
   // - Maintain strict likeness for any mention of CO-STAR/SIDEKICK (use REFERENCE 2).
   // - Render the action logically and cinematically.
-  
+
   // ${beat.caption ? `CAPTION BOX: "${beat.caption}".` : ""}
   // ${beat.dialogue ? `SPEECH BUBBLE: "${beat.dialogue}".` : ""}
-  
+
   // ${GLOBAL_ENHANCE}
   //     `;
   //   }
-  
+
   //   contents.push({ text: promptText });
-  
+
   //   // ============================================================
   //   // EXECUTE MODEL
   //   // ============================================================
@@ -580,10 +586,10 @@ OUTPUT STRICT JSON ONLY:
   //         },
   //       },
   //     });
-  
+
   //     const part =
   //       response.candidates?.[0]?.content?.parts?.find((p) => p.inlineData);
-  
+
   //     return part?.inlineData?.data
   //       ? `data:${part.inlineData.mimeType};base64,${part.inlineData.data}`
   //       : "";
@@ -597,7 +603,7 @@ OUTPUT STRICT JSON ONLY:
   // PROMPT 3
   const generateImage = async (beat: Beat, type: ComicFace["type"]): Promise<string> => {
     const contents: any[] = [];
-  
+
     // ---------------------------------------------
     // Attach reference images
     // ---------------------------------------------
@@ -609,7 +615,7 @@ OUTPUT STRICT JSON ONLY:
       contents.push({ text: "REFERENCE 2 [CO-STAR]:" });
       contents.push({ inlineData: { mimeType: "image/jpeg", data: friendRef.current.base64 } });
     }
-  
+
     // ---------------------------------------------
     // 1) STYLE ANCHOR (from your reference prompts)
     // ---------------------------------------------
@@ -627,16 +633,16 @@ OUTPUT STRICT JSON ONLY:
         heavy shadows, limited palette (black/white/red)
       `
     };
-  
+
     const styleEra =
       selectedGenre === "Custom"
         ? "Modern High-Fidelity Graphic Novel"
         : selectedGenre === "Sui Origin Story"
-        ? "Modern High-Fidelity Graphic Novel"
-        : selectedGenre;
-  
+          ? "Modern High-Fidelity Graphic Novel"
+          : selectedGenre;
+
     const styleAnchor = STYLE_ANCHORS[styleEra as keyof typeof STYLE_ANCHORS] || STYLE_ANCHORS["Modern High-Fidelity Graphic Novel"];
-  
+
     let promptText = `
   STYLE ANCHOR:
   ${styleAnchor}
@@ -666,7 +672,7 @@ OUTPUT STRICT JSON ONLY:
   - Clean, readable silhouettes.
   - Speech bubbles MUST NOT cover faces.
     `;
-  
+
     // ---------------------------------------------
     // 2) TYPE-SPECIFIC PROMPT BUILDING
     // ---------------------------------------------
@@ -675,7 +681,7 @@ OUTPUT STRICT JSON ONLY:
         LANGUAGES.find((language) => language.code === selectedLanguage)?.name || "English";
       const title =
         selectedGenre === "Sui Origin Story" ? "SUI: THE ORIGIN" : "INFINITE HEROES";
-  
+
       promptText += `
   TYPE: Comic Book Cover
   TITLE: "${title}" (or translated into ${langName.toUpperCase()})
@@ -684,7 +690,7 @@ OUTPUT STRICT JSON ONLY:
   AR: 3:2
       `;
     }
-  
+
     else if (type === "back_cover") {
       promptText += `
   TYPE: Back Cover
@@ -694,12 +700,12 @@ OUTPUT STRICT JSON ONLY:
   AR: 2:3
       `;
     }
-  
+
     else {
       // ---------------------------------------------
       // 3) SCENE PANEL TYPES (Your Phase 3 integrations)
       // ---------------------------------------------
-  
+
       // Apply your extended templates
       promptText += `
   TYPE: Comic Panel
@@ -740,9 +746,9 @@ OUTPUT STRICT JSON ONLY:
   - Lighting matches mood of the narrative.
       `;
     }
-  
+
     contents.push({ text: promptText });
-  
+
     // ---------------------------------------------
     // Execute Model
     // ---------------------------------------------
@@ -754,10 +760,10 @@ OUTPUT STRICT JSON ONLY:
           imageConfig: { aspectRatio: "2:3" }
         }
       });
-  
+
       const part =
         response.candidates?.[0]?.content?.parts?.find((p) => p.inlineData);
-  
+
       return part?.inlineData?.data
         ? `data:${part.inlineData.mimeType};base64,${part.inlineData.data}`
         : "";
@@ -935,6 +941,56 @@ OUTPUT STRICT JSON ONLY:
     }
   };
 
+  const handleMintHero = async () => {
+    if (!heroRef.current || !heroRef.current.base64) return;
+    setIsMintingHero(true);
+    try {
+      // Mock blob ID for now since we don't have Walrus integration in frontend yet
+      const mockBlobId = "0x0000000000000000000000000000000000000000000000000000000000000000";
+      const response = await mintHero("My Hero", mockBlobId, "https://example.com/metadata.json");
+      console.log("Hero Minted:", response);
+      setHeroMinted(true);
+      // Extract object ID from response if possible, or just assume success for now
+      // In a real app, we'd parse the effects to get the created object ID
+      // setHeroId(parsedId); 
+    } catch (error) {
+      console.error("Mint failed", error);
+      alert("Failed to mint hero. See console.");
+    } finally {
+      setIsMintingHero(false);
+    }
+  };
+
+
+
+  const handleMintComic = async () => {
+    if (!heroMinted) {
+      alert("Please mint your hero first!");
+      return;
+    }
+    setIsMintingComic(true);
+    try {
+      const mockBlobId = "0x0000000000000000000000000000000000000000000000000000000000000000";
+      const coverFace = comicFaces.find(f => f.type === "cover");
+      const coverUrl = coverFace?.imageUrl || "https://example.com/cover.jpg";
+
+      const response = await mintComic(
+        heroId || "0x0", // Pass hero ID if we have it
+        "Infinite Heroes Issue #1",
+        selectedGenre,
+        coverUrl,
+        mockBlobId
+      );
+      console.log("Comic Minted:", response);
+      setComicMinted(true);
+    } catch (error) {
+      console.error("Mint comic failed", error);
+      alert("Failed to mint comic. See console.");
+    } finally {
+      setIsMintingComic(false);
+    }
+  };
+
   const handleSheetClick = (index: number) => {
     if (!isStarted) return;
     if (index === 0 && currentSheetIndex === 0) return;
@@ -979,6 +1035,9 @@ OUTPUT STRICT JSON ONLY:
         onPremiseChange={setCustomPremise}
         onRichModeChange={setRichMode}
         onLaunch={launchStory}
+        onMintHero={handleMintHero}
+        isMinting={isMintingHero}
+        heroMinted={heroMinted}
       />
 
       <div className="comic-scene">
@@ -992,6 +1051,9 @@ OUTPUT STRICT JSON ONLY:
           onOpenBook={() => setCurrentSheetIndex(1)}
           onDownload={downloadPDF}
           onReset={resetApp}
+          onMintComic={handleMintComic}
+          isMintingComic={isMintingComic}
+          comicMinted={comicMinted}
         />
       </div>
     </div>

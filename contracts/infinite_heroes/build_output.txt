@@ -1,0 +1,842 @@
+[note] Dependencies on Bridge, MoveStdlib, Sui, and SuiSystem are automatically added, but this feature is disabled for your package because you have explicitly included dependencies on Sui. Consider removing these dependencies from Move.toml.
+UPDATING GIT DEPENDENCY https://github.com/MystenLabs/sui.git
+INCLUDING DEPENDENCY Sui
+INCLUDING DEPENDENCY MoveStdlib
+BUILDING InfiniteHeroes
+[0m[1m[38;5;11mwarning[W02021][0m[1m: duplicate alias[0m
+  [0m[34m┌─[0m ./sources/comic_issue.move:3:19
+  [0m[34m│[0m
+[0m[34m3[0m [0m[34m│[0m use sui::object::{[0m[33mSelf[0m, UID, ID};
+  [0m[34m│[0m                   [0m[33m^^^^[0m [0m[33mUnnecessary alias 'object' for module 'sui::object'. This alias is provided by default[0m
+  [0m[34m│[0m
+  [0m[34m=[0m This warning can be suppressed with '#[allow(duplicate_alias)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+[0m[1m[38;5;11mwarning[W02021][0m[1m: duplicate alias[0m
+  [0m[34m┌─[0m ./sources/comic_issue.move:3:25
+  [0m[34m│[0m
+[0m[34m3[0m [0m[34m│[0m use sui::object::{Self, [0m[33mUID[0m, ID};
+  [0m[34m│[0m                         [0m[33m^^^[0m [0m[33mUnnecessary alias 'UID' for module member 'sui::object::UID'. This alias is provided by default[0m
+  [0m[34m│[0m
+  [0m[34m=[0m This warning can be suppressed with '#[allow(duplicate_alias)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+[0m[1m[38;5;11mwarning[W02021][0m[1m: duplicate alias[0m
+  [0m[34m┌─[0m ./sources/comic_issue.move:3:30
+  [0m[34m│[0m
+[0m[34m3[0m [0m[34m│[0m use sui::object::{Self, UID, [0m[33mID[0m};
+  [0m[34m│[0m                              [0m[33m^^[0m [0m[33mUnnecessary alias 'ID' for module member 'sui::object::ID'. This alias is provided by default[0m
+  [0m[34m│[0m
+  [0m[34m=[0m This warning can be suppressed with '#[allow(duplicate_alias)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+[0m[1m[38;5;11mwarning[W09001][0m[1m: unused alias[0m
+  [0m[34m┌─[0m ./sources/comic_issue.move:4:16
+  [0m[34m│[0m
+[0m[34m4[0m [0m[34m│[0m use sui::url::{[0m[33mSelf[0m, Url};
+  [0m[34m│[0m                [0m[33m^^^^[0m [0m[33mUnused 'use' of alias 'url'. Consider removing it[0m
+  [0m[34m│[0m
+  [0m[34m=[0m This warning can be suppressed with '#[allow(unused_use)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+[0m[1m[38;5;11mwarning[W02021][0m[1m: duplicate alias[0m
+  [0m[34m┌─[0m ./sources/comic_issue.move:7:23
+  [0m[34m│[0m
+[0m[34m7[0m [0m[34m│[0m use sui::tx_context::{[0m[33mSelf[0m, TxContext};
+  [0m[34m│[0m                       [0m[33m^^^^[0m [0m[33mUnnecessary alias 'tx_context' for module 'sui::tx_context'. This alias is provided by default[0m
+  [0m[34m│[0m
+  [0m[34m=[0m This warning can be suppressed with '#[allow(duplicate_alias)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+[0m[1m[38;5;11mwarning[W02021][0m[1m: duplicate alias[0m
+  [0m[34m┌─[0m ./sources/comic_issue.move:7:29
+  [0m[34m│[0m
+[0m[34m7[0m [0m[34m│[0m use sui::tx_context::{Self, [0m[33mTxContext[0m};
+  [0m[34m│[0m                             [0m[33m^^^^^^^^^[0m [0m[33mUnnecessary alias 'TxContext' for module member 'sui::tx_context::TxContext'. This alias is provided by default[0m
+  [0m[34m│[0m
+  [0m[34m=[0m This warning can be suppressed with '#[allow(duplicate_alias)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+[0m[1m[38;5;11mwarning[W02021][0m[1m: duplicate alias[0m
+  [0m[34m┌─[0m ./sources/comic_issue.move:9:19
+  [0m[34m│[0m
+[0m[34m9[0m [0m[34m│[0m use std::option::{[0m[33mSelf[0m, Option};
+  [0m[34m│[0m                   [0m[33m^^^^[0m [0m[33mUnnecessary alias 'option' for module 'std::option'. This alias is provided by default[0m
+  [0m[34m│[0m
+  [0m[34m=[0m This warning can be suppressed with '#[allow(duplicate_alias)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+[0m[1m[38;5;11mwarning[W09001][0m[1m: unused alias[0m
+  [0m[34m┌─[0m ./sources/comic_issue.move:9:19
+  [0m[34m│[0m
+[0m[34m9[0m [0m[34m│[0m use std::option::{[0m[33mSelf[0m, Option};
+  [0m[34m│[0m                   [0m[33m^^^^[0m [0m[33mUnused 'use' of alias 'option'. Consider removing it[0m
+  [0m[34m│[0m
+  [0m[34m=[0m This warning can be suppressed with '#[allow(unused_use)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+[0m[1m[38;5;11mwarning[W02021][0m[1m: duplicate alias[0m
+  [0m[34m┌─[0m ./sources/comic_issue.move:9:25
+  [0m[34m│[0m
+[0m[34m9[0m [0m[34m│[0m use std::option::{Self, [0m[33mOption[0m};
+  [0m[34m│[0m                         [0m[33m^^^^^^[0m [0m[33mUnnecessary alias 'Option' for module member 'std::option::Option'. This alias is provided by default[0m
+  [0m[34m│[0m
+  [0m[34m=[0m This warning can be suppressed with '#[allow(duplicate_alias)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+[0m[1m[38;5;11mwarning[W09011][0m[1m: unused constant[0m
+   [0m[34m┌─[0m ./sources/comic_issue.move:13:7
+   [0m[34m│[0m
+[0m[34m13[0m [0m[34m│[0m const [0m[33mEFieldNotFound[0m: u64 = 0;
+   [0m[34m│[0m       [0m[33m^^^^^^^^^^^^^^[0m [0m[33mThe constant 'EFieldNotFound' is never used. Consider removing it.[0m
+   [0m[34m│[0m
+   [0m[34m=[0m This warning can be suppressed with '#[allow(unused_const)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+[0m[1m[38;5;11mwarning[W02021][0m[1m: duplicate alias[0m
+  [0m[34m┌─[0m ./sources/admin.move:3:19
+  [0m[34m│[0m
+[0m[34m3[0m [0m[34m│[0m use sui::object::{[0m[33mSelf[0m, UID};
+  [0m[34m│[0m                   [0m[33m^^^^[0m [0m[33mUnnecessary alias 'object' for module 'sui::object'. This alias is provided by default[0m
+  [0m[34m│[0m
+  [0m[34m=[0m This warning can be suppressed with '#[allow(duplicate_alias)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+[0m[1m[38;5;11mwarning[W02021][0m[1m: duplicate alias[0m
+  [0m[34m┌─[0m ./sources/admin.move:3:25
+  [0m[34m│[0m
+[0m[34m3[0m [0m[34m│[0m use sui::object::{Self, [0m[33mUID[0m};
+  [0m[34m│[0m                         [0m[33m^^^[0m [0m[33mUnnecessary alias 'UID' for module member 'sui::object::UID'. This alias is provided by default[0m
+  [0m[34m│[0m
+  [0m[34m=[0m This warning can be suppressed with '#[allow(duplicate_alias)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+[0m[1m[38;5;11mwarning[W02021][0m[1m: duplicate alias[0m
+  [0m[34m┌─[0m ./sources/admin.move:4:10
+  [0m[34m│[0m
+[0m[34m4[0m [0m[34m│[0m use sui::[0m[33mtransfer[0m;
+  [0m[34m│[0m          [0m[33m^^^^^^^^[0m [0m[33mUnnecessary alias 'transfer' for module 'sui::transfer'. This alias is provided by default[0m
+  [0m[34m│[0m
+  [0m[34m=[0m This warning can be suppressed with '#[allow(duplicate_alias)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+[0m[1m[38;5;11mwarning[W02021][0m[1m: duplicate alias[0m
+  [0m[34m┌─[0m ./sources/admin.move:5:22
+  [0m[34m│[0m
+[0m[34m5[0m [0m[34m│[0m use sui::tx_context::[0m[33mTxContext[0m;
+  [0m[34m│[0m                      [0m[33m^^^^^^^^^[0m [0m[33mUnnecessary alias 'TxContext' for module member 'sui::tx_context::TxContext'. This alias is provided by default[0m
+  [0m[34m│[0m
+  [0m[34m=[0m This warning can be suppressed with '#[allow(duplicate_alias)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+[0m[1m[38;5;11mwarning[W02021][0m[1m: duplicate alias[0m
+  [0m[34m┌─[0m ./sources/hero_asset.move:3:19
+  [0m[34m│[0m
+[0m[34m3[0m [0m[34m│[0m use sui::object::{[0m[33mSelf[0m, UID, ID};
+  [0m[34m│[0m                   [0m[33m^^^^[0m [0m[33mUnnecessary alias 'object' for module 'sui::object'. This alias is provided by default[0m
+  [0m[34m│[0m
+  [0m[34m=[0m This warning can be suppressed with '#[allow(duplicate_alias)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+[0m[1m[38;5;11mwarning[W02021][0m[1m: duplicate alias[0m
+  [0m[34m┌─[0m ./sources/hero_asset.move:3:25
+  [0m[34m│[0m
+[0m[34m3[0m [0m[34m│[0m use sui::object::{Self, [0m[33mUID[0m, ID};
+  [0m[34m│[0m                         [0m[33m^^^[0m [0m[33mUnnecessary alias 'UID' for module member 'sui::object::UID'. This alias is provided by default[0m
+  [0m[34m│[0m
+  [0m[34m=[0m This warning can be suppressed with '#[allow(duplicate_alias)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+[0m[1m[38;5;11mwarning[W02021][0m[1m: duplicate alias[0m
+  [0m[34m┌─[0m ./sources/hero_asset.move:3:30
+  [0m[34m│[0m
+[0m[34m3[0m [0m[34m│[0m use sui::object::{Self, UID, [0m[33mID[0m};
+  [0m[34m│[0m                              [0m[33m^^[0m [0m[33mUnnecessary alias 'ID' for module member 'sui::object::ID'. This alias is provided by default[0m
+  [0m[34m│[0m
+  [0m[34m=[0m This warning can be suppressed with '#[allow(duplicate_alias)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+[0m[1m[38;5;11mwarning[W09001][0m[1m: unused alias[0m
+  [0m[34m┌─[0m ./sources/hero_asset.move:4:16
+  [0m[34m│[0m
+[0m[34m4[0m [0m[34m│[0m use sui::url::{[0m[33mSelf[0m, Url};
+  [0m[34m│[0m                [0m[33m^^^^[0m [0m[33mUnused 'use' of alias 'url'. Consider removing it[0m
+  [0m[34m│[0m
+  [0m[34m=[0m This warning can be suppressed with '#[allow(unused_use)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+[0m[1m[38;5;11mwarning[W09001][0m[1m: unused alias[0m
+  [0m[34m┌─[0m ./sources/hero_asset.move:5:34
+  [0m[34m│[0m
+[0m[34m5[0m [0m[34m│[0m use sui::transfer_policy::{Self, [0m[33mTransferPolicy[0m, TransferPolicyCap};
+  [0m[34m│[0m                                  [0m[33m^^^^^^^^^^^^^^[0m [0m[33mUnused 'use' of alias 'TransferPolicy'. Consider removing it[0m
+  [0m[34m│[0m
+  [0m[34m=[0m This warning can be suppressed with '#[allow(unused_use)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+[0m[1m[38;5;9merror[E02001][0m[1m: duplicate declaration, item, or annotation[0m
+  [0m[34m┌─[0m ./sources/hero_asset.move:7:28
+  [0m[34m│[0m
+[0m[34m5[0m [0m[34m│[0m use sui::transfer_policy::{Self, TransferPolicy, TransferPolicyCap};
+  [0m[34m│[0m                            [0m[34m----[0m [0m[34mModule member or alias previously defined here[0m
+[0m[34m6[0m [0m[34m│[0m use sui::kiosk::{Self, Kiosk, KioskOwnerCap};
+[0m[34m7[0m [0m[34m│[0m use sui::transfer_policy::{[0m[31mSelf[0m, TransferPolicyCap};
+  [0m[34m│[0m                            [0m[31m^^^^[0m [0m[31mDuplicate alias 'transfer_policy'. Module aliases must be unique within a given namespace[0m
+
+[0m[1m[38;5;11mwarning[W09001][0m[1m: unused alias[0m
+  [0m[34m┌─[0m ./sources/hero_asset.move:7:34
+  [0m[34m│[0m
+[0m[34m7[0m [0m[34m│[0m use sui::transfer_policy::{Self, [0m[33mTransferPolicyCap[0m};
+  [0m[34m│[0m                                  [0m[33m^^^^^^^^^^^^^^^^^[0m [0m[33mUnused 'use' of alias 'TransferPolicyCap'. Consider removing it[0m
+  [0m[34m│[0m
+  [0m[34m=[0m This warning can be suppressed with '#[allow(unused_use)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+[0m[1m[38;5;9merror[E02001][0m[1m: duplicate declaration, item, or annotation[0m
+  [0m[34m┌─[0m ./sources/hero_asset.move:7:34
+  [0m[34m│[0m
+[0m[34m5[0m [0m[34m│[0m use sui::transfer_policy::{Self, TransferPolicy, TransferPolicyCap};
+  [0m[34m│[0m                                                  [0m[34m-----------------[0m [0m[34mModule member or alias previously defined here[0m
+[0m[34m6[0m [0m[34m│[0m use sui::kiosk::{Self, Kiosk, KioskOwnerCap};
+[0m[34m7[0m [0m[34m│[0m use sui::transfer_policy::{Self, [0m[31mTransferPolicyCap[0m};
+  [0m[34m│[0m                                  [0m[31m^^^^^^^^^^^^^^^^^[0m [0m[31mDuplicate module member 'TransferPolicyCap'. Top level names in a namespace must be unique[0m
+
+[0m[1m[38;5;9merror[E03002][0m[1m: unbound module[0m
+  [0m[34m┌─[0m ./sources/hero_asset.move:8:5
+  [0m[34m│[0m
+[0m[34m8[0m [0m[34m│[0m use [0m[31msui::publish[0m;
+  [0m[34m│[0m     [0m[31m^^^^^^^^^^^^[0m [0m[31mInvalid 'use'. Unbound module: 'sui::publish'[0m
+
+[0m[1m[38;5;11mwarning[W02021][0m[1m: duplicate alias[0m
+   [0m[34m┌─[0m ./sources/hero_asset.move:10:23
+   [0m[34m│[0m
+[0m[34m10[0m [0m[34m│[0m use sui::tx_context::{[0m[33mSelf[0m, TxContext};
+   [0m[34m│[0m                       [0m[33m^^^^[0m [0m[33mUnnecessary alias 'tx_context' for module 'sui::tx_context'. This alias is provided by default[0m
+   [0m[34m│[0m
+   [0m[34m=[0m This warning can be suppressed with '#[allow(duplicate_alias)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+[0m[1m[38;5;11mwarning[W02021][0m[1m: duplicate alias[0m
+   [0m[34m┌─[0m ./sources/hero_asset.move:10:29
+   [0m[34m│[0m
+[0m[34m10[0m [0m[34m│[0m use sui::tx_context::{Self, [0m[33mTxContext[0m};
+   [0m[34m│[0m                             [0m[33m^^^^^^^^^[0m [0m[33mUnnecessary alias 'TxContext' for module member 'sui::tx_context::TxContext'. This alias is provided by default[0m
+   [0m[34m│[0m
+   [0m[34m=[0m This warning can be suppressed with '#[allow(duplicate_alias)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+[0m[1m[38;5;11mwarning[W02021][0m[1m: duplicate alias[0m
+   [0m[34m┌─[0m ./sources/hero_asset.move:12:19
+   [0m[34m│[0m
+[0m[34m12[0m [0m[34m│[0m use std::option::{[0m[33mSelf[0m, Option};
+   [0m[34m│[0m                   [0m[33m^^^^[0m [0m[33mUnnecessary alias 'option' for module 'std::option'. This alias is provided by default[0m
+   [0m[34m│[0m
+   [0m[34m=[0m This warning can be suppressed with '#[allow(duplicate_alias)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+[0m[1m[38;5;11mwarning[W02021][0m[1m: duplicate alias[0m
+   [0m[34m┌─[0m ./sources/hero_asset.move:12:25
+   [0m[34m│[0m
+[0m[34m12[0m [0m[34m│[0m use std::option::{Self, [0m[33mOption[0m};
+   [0m[34m│[0m                         [0m[33m^^^^^^[0m [0m[33mUnnecessary alias 'Option' for module member 'std::option::Option'. This alias is provided by default[0m
+   [0m[34m│[0m
+   [0m[34m=[0m This warning can be suppressed with '#[allow(duplicate_alias)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+[0m[1m[38;5;11mwarning[W09011][0m[1m: unused constant[0m
+   [0m[34m┌─[0m ./sources/hero_asset.move:16:7
+   [0m[34m│[0m
+[0m[34m16[0m [0m[34m│[0m const [0m[33mENotAuthorized[0m: u64 = 0;
+   [0m[34m│[0m       [0m[33m^^^^^^^^^^^^^^[0m [0m[33mThe constant 'ENotAuthorized' is never used. Consider removing it.[0m
+   [0m[34m│[0m
+   [0m[34m=[0m This warning can be suppressed with '#[allow(unused_const)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+[0m[1m[38;5;11mwarning[W09011][0m[1m: unused constant[0m
+   [0m[34m┌─[0m ./sources/hero_asset.move:18:7
+   [0m[34m│[0m
+[0m[34m18[0m [0m[34m│[0m const [0m[33mERentalNotEnabled[0m: u64 = 2;
+   [0m[34m│[0m       [0m[33m^^^^^^^^^^^^^^^^^[0m [0m[33mThe constant 'ERentalNotEnabled' is never used. Consider removing it.[0m
+   [0m[34m│[0m
+   [0m[34m=[0m This warning can be suppressed with '#[allow(unused_const)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+[0m[1m[38;5;11mwarning[W09011][0m[1m: unused constant[0m
+   [0m[34m┌─[0m ./sources/hero_asset.move:19:7
+   [0m[34m│[0m
+[0m[34m19[0m [0m[34m│[0m const [0m[33mEAlreadyInKiosk[0m: u64 = 3;
+   [0m[34m│[0m       [0m[33m^^^^^^^^^^^^^^^[0m [0m[33mThe constant 'EAlreadyInKiosk' is never used. Consider removing it.[0m
+   [0m[34m│[0m
+   [0m[34m=[0m This warning can be suppressed with '#[allow(unused_const)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+[0m[1m[38;5;11mwarning[W02021][0m[1m: duplicate alias[0m
+   [0m[34m┌─[0m ./sources/hero_asset.move:70:14
+   [0m[34m│[0m
+[0m[34m10[0m [0m[34m│[0m use sui::tx_context::{Self, TxContext};
+   [0m[34m│[0m                       [0m[34m----[0m [0m[34mThe same alias was previously declared here[0m
+   [0m[34m·[0m
+[0m[34m70[0m [0m[34m│[0m     use sui::[0m[33mtx_context[0m;
+   [0m[34m│[0m              [0m[33m^^^^^^^^^^[0m [0m[33mUnnecessary alias 'tx_context' for module 'sui::tx_context'. It was already in scope[0m
+   [0m[34m│[0m
+   [0m[34m=[0m This warning can be suppressed with '#[allow(duplicate_alias)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+[0m[1m[38;5;9merror[E04007][0m[1m: incompatible types[0m
+    [0m[34m┌─[0m ./sources/hero_asset.move:105:32
+    [0m[34m│[0m
+[0m[34m100[0m [0m[34m│[0m     ctx: &mut TxContext
+    [0m[34m│[0m               [0m[34m---------[0m [0m[34mGiven: 'sui::tx_context::TxContext'[0m
+    [0m[34m·[0m
+[0m[34m105[0m [0m[34m│[0m     let (policy, policy_cap) = [0m[31mtransfer_policy::new(ctx)[0m;
+    [0m[34m│[0m                                [0m[31m^^^^^^^^^^^^^^^^^^^^^^^^^[0m [0m[31mInvalid call of 'sui::transfer_policy::new'. Invalid argument for parameter 'pub'[0m
+    [0m[34m│[0m
+    [0m[34m┌─[0m /Users/harryphan/.move/https___github_com_MystenLabs_sui_git_framework__mainnet/crates/sui-framework/packages/sui-framework/sources/kiosk/transfer_policy.move:115:25
+    [0m[34m│[0m
+[0m[34m115[0m [0m[34m│[0m public fun new<T>(pub: &Publisher, ctx: &mut TxContext): (TransferPolicy<T>, TransferPolicyCap<T>) {
+    [0m[34m│[0m                         [0m[34m---------[0m [0m[34mExpected: 'sui::package::Publisher'[0m
+
+[0m[1m[38;5;9merror[E04010][0m[1m: cannot infer type[0m
+    [0m[34m┌─[0m ./sources/hero_asset.move:105:32
+    [0m[34m│[0m
+[0m[34m105[0m [0m[34m│[0m     let (policy, policy_cap) = [0m[31mtransfer_policy::new(ctx)[0m;
+    [0m[34m│[0m                                [0m[31m^^^^^^^^^^^^^^^^^^^^^^^^^[0m [0m[31mCould not infer this type. Try adding an annotation[0m
+
+[0m[1m[38;5;9merror[E04016][0m[1m: too few arguments[0m
+    [0m[34m┌─[0m ./sources/hero_asset.move:105:32
+    [0m[34m│[0m
+[0m[34m105[0m [0m[34m│[0m     let (policy, policy_cap) = [0m[31mtransfer_policy::new(ctx)[0m;
+    [0m[34m│[0m                                [0m[31m^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+    [0m[34m│[0m                                [0m[31m│[0m                   [0m[34m│[0m
+    [0m[34m│[0m                                [0m[31m│[0m                   [0m[34mFound 1 argument(s) here[0m
+    [0m[34m│[0m                                [0m[31mInvalid call of 'sui::transfer_policy::new'. The call expected 2 argument(s) but got 1[0m
+    [0m[34m│[0m
+    [0m[34m┌─[0m /Users/harryphan/.move/https___github_com_MystenLabs_sui_git_framework__mainnet/crates/sui-framework/packages/sui-framework/sources/kiosk/transfer_policy.move:115:12
+    [0m[34m│[0m
+[0m[34m115[0m [0m[34m│[0m public fun new<T>(pub: &Publisher, ctx: &mut TxContext): (TransferPolicy<T>, TransferPolicyCap<T>) {
+    [0m[34m│[0m            [0m[34m---[0m [0m[34mExpected 2 argument(s)[0m
+
+[0m[1m[38;5;9merror[E03003][0m[1m: unbound module member[0m
+    [0m[34m┌─[0m ./sources/hero_asset.move:106:5
+    [0m[34m│[0m
+[0m[34m106[0m [0m[34m│[0m     [0m[31mtransfer_policy::set_royalty[0m(&policy, &policy_cap, 500); // 5% royalty
+    [0m[34m│[0m     [0m[31m^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m [0m[31mInvalid module access. Unbound function 'set_royalty' in module 'sui::transfer_policy'[0m
+
+[0m[1m[38;5;9merror[E03003][0m[1m: unbound module member[0m
+    [0m[34m┌─[0m ./sources/hero_asset.move:107:5
+    [0m[34m│[0m
+[0m[34m107[0m [0m[34m│[0m     [0m[31mtransfer_policy::freeze_policy[0m(policy_cap, policy);
+    [0m[34m│[0m     [0m[31m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m [0m[31mInvalid module access. Unbound function 'freeze_policy' in module 'sui::transfer_policy'[0m
+
+[0m[1m[38;5;9merror[E05001][0m[1m: ability constraint not satisfied[0m
+    [0m[34m┌─[0m ./sources/hero_asset.move:111:5
+    [0m[34m│[0m
+[0m[34m111[0m [0m[34m│[0m     [0m[31mkiosk::lock(kiosk, kiosk_cap, policy, hero_id)[0m;
+    [0m[34m│[0m     [0m[31m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m [0m[31m'key' constraint not satisifed[0m
+    [0m[34m│[0m
+    [0m[34m┌─[0m /Users/harryphan/.move/https___github_com_MystenLabs_sui_git_framework__mainnet/crates/sui-framework/packages/sui-framework/sources/object.move:61:15
+    [0m[34m│[0m
+[0m[34m 61[0m [0m[34m│[0m public struct ID has copy, drop, store {
+    [0m[34m│[0m               [0m[34m--[0m [0m[34mTo satisfy the constraint, the 'key' ability would need to be added here[0m
+    [0m[34m·[0m
+[0m[34m217[0m [0m[34m│[0m public fun id<T: key>(obj: &T): ID {
+    [0m[34m│[0m                                 [0m[34m--[0m [0m[34mThe type 'sui::object::ID' does not have the ability 'key'[0m
+    [0m[34m│[0m
+    [0m[34m┌─[0m /Users/harryphan/.move/https___github_com_MystenLabs_sui_git_framework__mainnet/crates/sui-framework/packages/sui-framework/sources/kiosk/kiosk.move:305:20
+    [0m[34m│[0m
+[0m[34m305[0m [0m[34m│[0m public fun lock<T: key + store>(
+    [0m[34m│[0m                    [0m[34m---[0m [0m[34m'key' constraint declared here[0m
+
+[0m[1m[38;5;9merror[E04007][0m[1m: incompatible types[0m
+    [0m[34m┌─[0m ./sources/hero_asset.move:111:5
+    [0m[34m│[0m
+[0m[34m111[0m [0m[34m│[0m     [0m[31mkiosk::lock(kiosk, kiosk_cap, policy, hero_id)[0m;
+    [0m[34m│[0m     [0m[31m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m [0m[31mInvalid call of 'sui::kiosk::lock'. Invalid argument for parameter '_policy'[0m
+    [0m[34m│[0m
+    [0m[34m┌─[0m /Users/harryphan/.move/https___github_com_MystenLabs_sui_git_framework__mainnet/crates/sui-framework/packages/sui-framework/sources/kiosk/transfer_policy.move:115:59
+    [0m[34m│[0m
+[0m[34m115[0m [0m[34m│[0m public fun new<T>(pub: &Publisher, ctx: &mut TxContext): (TransferPolicy<T>, TransferPolicyCap<T>) {
+    [0m[34m│[0m                                                           [0m[34m-----------------[0m [0m[34mGiven: 'sui::transfer_policy::TransferPolicy<_>'[0m
+    [0m[34m│[0m
+    [0m[34m┌─[0m /Users/harryphan/.move/https___github_com_MystenLabs_sui_git_framework__mainnet/crates/sui-framework/packages/sui-framework/sources/kiosk/kiosk.move:308:14
+    [0m[34m│[0m
+[0m[34m308[0m [0m[34m│[0m     _policy: &TransferPolicy<T>,
+    [0m[34m│[0m              [0m[34m------------------[0m [0m[34mExpected: '&sui::transfer_policy::TransferPolicy<_>'[0m
+
+[0m[1m[38;5;11mwarning[W02021][0m[1m: duplicate alias[0m
+  [0m[34m┌─[0m ./sources/protocol.move:3:19
+  [0m[34m│[0m
+[0m[34m3[0m [0m[34m│[0m use sui::object::{[0m[33mSelf[0m, UID, ID};
+  [0m[34m│[0m                   [0m[33m^^^^[0m [0m[33mUnnecessary alias 'object' for module 'sui::object'. This alias is provided by default[0m
+  [0m[34m│[0m
+  [0m[34m=[0m This warning can be suppressed with '#[allow(duplicate_alias)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+[0m[1m[38;5;11mwarning[W02021][0m[1m: duplicate alias[0m
+  [0m[34m┌─[0m ./sources/protocol.move:3:25
+  [0m[34m│[0m
+[0m[34m3[0m [0m[34m│[0m use sui::object::{Self, [0m[33mUID[0m, ID};
+  [0m[34m│[0m                         [0m[33m^^^[0m [0m[33mUnnecessary alias 'UID' for module member 'sui::object::UID'. This alias is provided by default[0m
+  [0m[34m│[0m
+  [0m[34m=[0m This warning can be suppressed with '#[allow(duplicate_alias)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+[0m[1m[38;5;11mwarning[W02021][0m[1m: duplicate alias[0m
+  [0m[34m┌─[0m ./sources/protocol.move:3:30
+  [0m[34m│[0m
+[0m[34m3[0m [0m[34m│[0m use sui::object::{Self, UID, [0m[33mID[0m};
+  [0m[34m│[0m                              [0m[33m^^[0m [0m[33mUnnecessary alias 'ID' for module member 'sui::object::ID'. This alias is provided by default[0m
+  [0m[34m│[0m
+  [0m[34m=[0m This warning can be suppressed with '#[allow(duplicate_alias)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+[0m[1m[38;5;11mwarning[W09001][0m[1m: unused alias[0m
+  [0m[34m┌─[0m ./sources/protocol.move:4:16
+  [0m[34m│[0m
+[0m[34m4[0m [0m[34m│[0m use sui::url::{[0m[33mSelf[0m, Url};
+  [0m[34m│[0m                [0m[33m^^^^[0m [0m[33mUnused 'use' of alias 'url'. Consider removing it[0m
+  [0m[34m│[0m
+  [0m[34m=[0m This warning can be suppressed with '#[allow(unused_use)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+[0m[1m[38;5;11mwarning[W09001][0m[1m: unused alias[0m
+  [0m[34m┌─[0m ./sources/protocol.move:6:34
+  [0m[34m│[0m
+[0m[34m6[0m [0m[34m│[0m use sui::transfer_policy::{Self, [0m[33mTransferPolicy[0m, TransferPolicyCap};
+  [0m[34m│[0m                                  [0m[33m^^^^^^^^^^^^^^[0m [0m[33mUnused 'use' of alias 'TransferPolicy'. Consider removing it[0m
+  [0m[34m│[0m
+  [0m[34m=[0m This warning can be suppressed with '#[allow(unused_use)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+[0m[1m[38;5;11mwarning[W09001][0m[1m: unused alias[0m
+  [0m[34m┌─[0m ./sources/protocol.move:6:50
+  [0m[34m│[0m
+[0m[34m6[0m [0m[34m│[0m use sui::transfer_policy::{Self, TransferPolicy, [0m[33mTransferPolicyCap[0m};
+  [0m[34m│[0m                                                  [0m[33m^^^^^^^^^^^^^^^^^[0m [0m[33mUnused 'use' of alias 'TransferPolicyCap'. Consider removing it[0m
+  [0m[34m│[0m
+  [0m[34m=[0m This warning can be suppressed with '#[allow(unused_use)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+[0m[1m[38;5;11mwarning[W09001][0m[1m: unused alias[0m
+   [0m[34m┌─[0m ./sources/protocol.move:10:18
+   [0m[34m│[0m
+[0m[34m10[0m [0m[34m│[0m use sui::table::{[0m[33mSelf[0m, Table};
+   [0m[34m│[0m                  [0m[33m^^^^[0m [0m[33mUnused 'use' of alias 'table'. Consider removing it[0m
+   [0m[34m│[0m
+   [0m[34m=[0m This warning can be suppressed with '#[allow(unused_use)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+[0m[1m[38;5;11mwarning[W09001][0m[1m: unused alias[0m
+   [0m[34m┌─[0m ./sources/protocol.move:10:24
+   [0m[34m│[0m
+[0m[34m10[0m [0m[34m│[0m use sui::table::{Self, [0m[33mTable[0m};
+   [0m[34m│[0m                        [0m[33m^^^^^[0m [0m[33mUnused 'use' of alias 'Table'. Consider removing it[0m
+   [0m[34m│[0m
+   [0m[34m=[0m This warning can be suppressed with '#[allow(unused_use)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+[0m[1m[38;5;11mwarning[W02021][0m[1m: duplicate alias[0m
+   [0m[34m┌─[0m ./sources/protocol.move:12:10
+   [0m[34m│[0m
+[0m[34m12[0m [0m[34m│[0m use sui::[0m[33mtx_context[0m;
+   [0m[34m│[0m          [0m[33m^^^^^^^^^^[0m [0m[33mUnnecessary alias 'tx_context' for module 'sui::tx_context'. This alias is provided by default[0m
+   [0m[34m│[0m
+   [0m[34m=[0m This warning can be suppressed with '#[allow(duplicate_alias)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+[0m[1m[38;5;11mwarning[W02021][0m[1m: duplicate alias[0m
+   [0m[34m┌─[0m ./sources/protocol.move:13:10
+   [0m[34m│[0m
+[0m[34m13[0m [0m[34m│[0m use sui::[0m[33mtransfer[0m;
+   [0m[34m│[0m          [0m[33m^^^^^^^^[0m [0m[33mUnnecessary alias 'transfer' for module 'sui::transfer'. This alias is provided by default[0m
+   [0m[34m│[0m
+   [0m[34m=[0m This warning can be suppressed with '#[allow(duplicate_alias)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+[0m[1m[38;5;11mwarning[W02021][0m[1m: duplicate alias[0m
+   [0m[34m┌─[0m ./sources/protocol.move:15:19
+   [0m[34m│[0m
+[0m[34m15[0m [0m[34m│[0m use std::option::{[0m[33mSelf[0m, Option};
+   [0m[34m│[0m                   [0m[33m^^^^[0m [0m[33mUnnecessary alias 'option' for module 'std::option'. This alias is provided by default[0m
+   [0m[34m│[0m
+   [0m[34m=[0m This warning can be suppressed with '#[allow(duplicate_alias)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+[0m[1m[38;5;11mwarning[W02021][0m[1m: duplicate alias[0m
+   [0m[34m┌─[0m ./sources/protocol.move:15:25
+   [0m[34m│[0m
+[0m[34m15[0m [0m[34m│[0m use std::option::{Self, [0m[33mOption[0m};
+   [0m[34m│[0m                         [0m[33m^^^^^^[0m [0m[33mUnnecessary alias 'Option' for module member 'std::option::Option'. This alias is provided by default[0m
+   [0m[34m│[0m
+   [0m[34m=[0m This warning can be suppressed with '#[allow(duplicate_alias)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+[0m[1m[38;5;11mwarning[W09001][0m[1m: unused alias[0m
+   [0m[34m┌─[0m ./sources/protocol.move:18:42
+   [0m[34m│[0m
+[0m[34m18[0m [0m[34m│[0m use infinite_heroes::comic_issue::{Self, [0m[33mComicIssue[0m};
+   [0m[34m│[0m                                          [0m[33m^^^^^^^^^^[0m [0m[33mUnused 'use' of alias 'ComicIssue'. Consider removing it[0m
+   [0m[34m│[0m
+   [0m[34m=[0m This warning can be suppressed with '#[allow(unused_use)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+[0m[1m[38;5;11mwarning[W09011][0m[1m: unused constant[0m
+   [0m[34m┌─[0m ./sources/protocol.move:26:7
+   [0m[34m│[0m
+[0m[34m26[0m [0m[34m│[0m const [0m[33mERentalNotEnabled[0m: u64 = 1;
+   [0m[34m│[0m       [0m[33m^^^^^^^^^^^^^^^^^[0m [0m[33mThe constant 'ERentalNotEnabled' is never used. Consider removing it.[0m
+   [0m[34m│[0m
+   [0m[34m=[0m This warning can be suppressed with '#[allow(unused_const)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+[0m[1m[38;5;11mwarning[W09011][0m[1m: unused constant[0m
+   [0m[34m┌─[0m ./sources/protocol.move:27:7
+   [0m[34m│[0m
+[0m[34m27[0m [0m[34m│[0m const [0m[33mEInvalidHero[0m: u64 = 2;
+   [0m[34m│[0m       [0m[33m^^^^^^^^^^^^[0m [0m[33mThe constant 'EInvalidHero' is never used. Consider removing it.[0m
+   [0m[34m│[0m
+   [0m[34m=[0m This warning can be suppressed with '#[allow(unused_const)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+[0m[1m[38;5;11mwarning[W09011][0m[1m: unused constant[0m
+   [0m[34m┌─[0m ./sources/protocol.move:29:7
+   [0m[34m│[0m
+[0m[34m29[0m [0m[34m│[0m const [0m[33mEInvalidSeries[0m: u64 = 4;
+   [0m[34m│[0m       [0m[33m^^^^^^^^^^^^^^[0m [0m[33mThe constant 'EInvalidSeries' is never used. Consider removing it.[0m
+   [0m[34m│[0m
+   [0m[34m=[0m This warning can be suppressed with '#[allow(unused_const)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+[0m[1m[38;5;9merror[Sui E02003][0m[1m: invalid 'init' function[0m
+   [0m[34m┌─[0m ./sources/protocol.move:78:12
+   [0m[34m│[0m
+[0m[34m78[0m [0m[34m│[0m public fun [0m[31minit[0m(ctx: &mut TxContext) {
+   [0m[34m│[0m [0m[34m------[0m     [0m[31m^^^^[0m [0m[31mInvalid 'init' function declaration[0m
+   [0m[34m│[0m [0m[34m│[0m           
+   [0m[34m│[0m [0m[34m'init' functions must be internal to their module[0m
+
+[0m[1m[38;5;9merror[E04007][0m[1m: incompatible types[0m
+    [0m[34m┌─[0m ./sources/protocol.move:140:25
+    [0m[34m│[0m
+[0m[34m108[0m [0m[34m│[0m     payment: Coin<SUI>,
+    [0m[34m│[0m              [0m[34m---------[0m [0m[34mGiven: 'sui::coin::Coin<sui::sui::SUI>'[0m
+    [0m[34m·[0m
+[0m[34m140[0m [0m[34m│[0m     let platform_coin = [0m[31mcoin::take(&mut payment, platform_fee)[0m;
+    [0m[34m│[0m                         [0m[31m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m [0m[31mInvalid call of 'sui::coin::take'. Invalid argument for parameter 'balance'[0m
+    [0m[34m│[0m
+    [0m[34m┌─[0m /Users/harryphan/.move/https___github_com_MystenLabs_sui_git_framework__mainnet/crates/sui-framework/packages/sui-framework/sources/coin.move:153:34
+    [0m[34m│[0m
+[0m[34m153[0m [0m[34m│[0m public fun take<T>(balance: &mut Balance<T>, value: u64, ctx: &mut TxContext): Coin<T> {
+    [0m[34m│[0m                                  [0m[34m----------[0m [0m[34mExpected: 'sui::balance::Balance<_>'[0m
+
+[0m[1m[38;5;9merror[E04016][0m[1m: too few arguments[0m
+    [0m[34m┌─[0m ./sources/protocol.move:140:25
+    [0m[34m│[0m
+[0m[34m140[0m [0m[34m│[0m     let platform_coin = [0m[31mcoin::take(&mut payment, platform_fee)[0m;
+    [0m[34m│[0m                         [0m[31m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+    [0m[34m│[0m                         [0m[31m│[0m         [0m[34m│[0m
+    [0m[34m│[0m                         [0m[31m│[0m         [0m[34mFound 2 argument(s) here[0m
+    [0m[34m│[0m                         [0m[31mInvalid call of 'sui::coin::take'. The call expected 3 argument(s) but got 2[0m
+    [0m[34m│[0m
+    [0m[34m┌─[0m /Users/harryphan/.move/https___github_com_MystenLabs_sui_git_framework__mainnet/crates/sui-framework/packages/sui-framework/sources/coin.move:153:12
+    [0m[34m│[0m
+[0m[34m153[0m [0m[34m│[0m public fun take<T>(balance: &mut Balance<T>, value: u64, ctx: &mut TxContext): Coin<T> {
+    [0m[34m│[0m            [0m[34m----[0m [0m[34mExpected 3 argument(s)[0m
+
+[0m[1m[38;5;9merror[E04007][0m[1m: incompatible types[0m
+    [0m[34m┌─[0m ./sources/protocol.move:145:25
+    [0m[34m│[0m
+[0m[34m108[0m [0m[34m│[0m     payment: Coin<SUI>,
+    [0m[34m│[0m              [0m[34m---------[0m [0m[34mGiven: 'sui::coin::Coin<sui::sui::SUI>'[0m
+    [0m[34m·[0m
+[0m[34m145[0m [0m[34m│[0m         let hero_coin = [0m[31mcoin::take(&mut payment, hero_royalty)[0m;
+    [0m[34m│[0m                         [0m[31m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m [0m[31mInvalid call of 'sui::coin::take'. Invalid argument for parameter 'balance'[0m
+    [0m[34m│[0m
+    [0m[34m┌─[0m /Users/harryphan/.move/https___github_com_MystenLabs_sui_git_framework__mainnet/crates/sui-framework/packages/sui-framework/sources/coin.move:153:34
+    [0m[34m│[0m
+[0m[34m153[0m [0m[34m│[0m public fun take<T>(balance: &mut Balance<T>, value: u64, ctx: &mut TxContext): Coin<T> {
+    [0m[34m│[0m                                  [0m[34m----------[0m [0m[34mExpected: 'sui::balance::Balance<_>'[0m
+
+[0m[1m[38;5;9merror[E04010][0m[1m: cannot infer type[0m
+    [0m[34m┌─[0m ./sources/protocol.move:145:25
+    [0m[34m│[0m
+[0m[34m145[0m [0m[34m│[0m         let hero_coin = [0m[31mcoin::take(&mut payment, hero_royalty)[0m;
+    [0m[34m│[0m                         [0m[31m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m [0m[31mCould not infer this type. Try adding an annotation[0m
+
+[0m[1m[38;5;9merror[E04016][0m[1m: too few arguments[0m
+    [0m[34m┌─[0m ./sources/protocol.move:145:25
+    [0m[34m│[0m
+[0m[34m145[0m [0m[34m│[0m         let hero_coin = [0m[31mcoin::take(&mut payment, hero_royalty)[0m;
+    [0m[34m│[0m                         [0m[31m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+    [0m[34m│[0m                         [0m[31m│[0m         [0m[34m│[0m
+    [0m[34m│[0m                         [0m[31m│[0m         [0m[34mFound 2 argument(s) here[0m
+    [0m[34m│[0m                         [0m[31mInvalid call of 'sui::coin::take'. The call expected 3 argument(s) but got 2[0m
+    [0m[34m│[0m
+    [0m[34m┌─[0m /Users/harryphan/.move/https___github_com_MystenLabs_sui_git_framework__mainnet/crates/sui-framework/packages/sui-framework/sources/coin.move:153:12
+    [0m[34m│[0m
+[0m[34m153[0m [0m[34m│[0m public fun take<T>(balance: &mut Balance<T>, value: u64, ctx: &mut TxContext): Coin<T> {
+    [0m[34m│[0m            [0m[34m----[0m [0m[34mExpected 3 argument(s)[0m
+
+[0m[1m[38;5;9merror[E04007][0m[1m: incompatible types[0m
+    [0m[34m┌─[0m ./sources/protocol.move:153:9
+    [0m[34m│[0m
+[0m[34m108[0m [0m[34m│[0m     payment: Coin<SUI>,
+    [0m[34m│[0m              [0m[34m---------[0m [0m[34mGiven: 'sui::coin::Coin<sui::sui::SUI>'[0m
+    [0m[34m·[0m
+[0m[34m153[0m [0m[34m│[0m         [0m[31mcoin::burn(payment)[0m;
+    [0m[34m│[0m         [0m[31m^^^^^^^^^^^^^^^^^^^[0m [0m[31mInvalid call of 'sui::coin::burn'. Invalid argument for parameter 'cap'[0m
+    [0m[34m│[0m
+    [0m[34m┌─[0m /Users/harryphan/.move/https___github_com_MystenLabs_sui_git_framework__mainnet/crates/sui-framework/packages/sui-framework/sources/coin.move:332:31
+    [0m[34m│[0m
+[0m[34m332[0m [0m[34m│[0m public entry fun burn<T>(cap: &mut TreasuryCap<T>, c: Coin<T>): u64 {
+    [0m[34m│[0m                               [0m[34m-------------------[0m [0m[34mExpected: '&mut sui::coin::TreasuryCap<_>'[0m
+
+[0m[1m[38;5;9merror[E04010][0m[1m: cannot infer type[0m
+    [0m[34m┌─[0m ./sources/protocol.move:153:9
+    [0m[34m│[0m
+[0m[34m153[0m [0m[34m│[0m         [0m[31mcoin::burn(payment)[0m;
+    [0m[34m│[0m         [0m[31m^^^^^^^^^^^^^^^^^^^[0m [0m[31mCould not infer this type. Try adding an annotation[0m
+
+[0m[1m[38;5;9merror[E04016][0m[1m: too few arguments[0m
+    [0m[34m┌─[0m ./sources/protocol.move:153:9
+    [0m[34m│[0m
+[0m[34m153[0m [0m[34m│[0m         [0m[31mcoin::burn(payment)[0m;
+    [0m[34m│[0m         [0m[31m^^^^^^^^^^^^^^^^^^^[0m
+    [0m[34m│[0m         [0m[31m│[0m         [0m[34m│[0m
+    [0m[34m│[0m         [0m[31m│[0m         [0m[34mFound 1 argument(s) here[0m
+    [0m[34m│[0m         [0m[31mInvalid call of 'sui::coin::burn'. The call expected 2 argument(s) but got 1[0m
+    [0m[34m│[0m
+    [0m[34m┌─[0m /Users/harryphan/.move/https___github_com_MystenLabs_sui_git_framework__mainnet/crates/sui-framework/packages/sui-framework/sources/coin.move:332:18
+    [0m[34m│[0m
+[0m[34m332[0m [0m[34m│[0m public entry fun burn<T>(cap: &mut TreasuryCap<T>, c: Coin<T>): u64 {
+    [0m[34m│[0m                  [0m[34m----[0m [0m[34mExpected 2 argument(s)[0m
+
+[0m[1m[38;5;9merror[E04007][0m[1m: incompatible types[0m
+    [0m[34m┌─[0m ./sources/protocol.move:177:32
+    [0m[34m│[0m
+[0m[34m109[0m [0m[34m│[0m     ctx: &mut TxContext
+    [0m[34m│[0m               [0m[34m---------[0m [0m[34mGiven: 'sui::tx_context::TxContext'[0m
+    [0m[34m·[0m
+[0m[34m177[0m [0m[34m│[0m     let (policy, policy_cap) = [0m[31mtransfer_policy::new(ctx)[0m;
+    [0m[34m│[0m                                [0m[31m^^^^^^^^^^^^^^^^^^^^^^^^^[0m [0m[31mInvalid call of 'sui::transfer_policy::new'. Invalid argument for parameter 'pub'[0m
+    [0m[34m│[0m
+    [0m[34m┌─[0m /Users/harryphan/.move/https___github_com_MystenLabs_sui_git_framework__mainnet/crates/sui-framework/packages/sui-framework/sources/kiosk/transfer_policy.move:115:25
+    [0m[34m│[0m
+[0m[34m115[0m [0m[34m│[0m public fun new<T>(pub: &Publisher, ctx: &mut TxContext): (TransferPolicy<T>, TransferPolicyCap<T>) {
+    [0m[34m│[0m                         [0m[34m---------[0m [0m[34mExpected: 'sui::package::Publisher'[0m
+
+[0m[1m[38;5;9merror[E04010][0m[1m: cannot infer type[0m
+    [0m[34m┌─[0m ./sources/protocol.move:177:32
+    [0m[34m│[0m
+[0m[34m177[0m [0m[34m│[0m     let (policy, policy_cap) = [0m[31mtransfer_policy::new(ctx)[0m;
+    [0m[34m│[0m                                [0m[31m^^^^^^^^^^^^^^^^^^^^^^^^^[0m [0m[31mCould not infer this type. Try adding an annotation[0m
+
+[0m[1m[38;5;9merror[E04016][0m[1m: too few arguments[0m
+    [0m[34m┌─[0m ./sources/protocol.move:177:32
+    [0m[34m│[0m
+[0m[34m177[0m [0m[34m│[0m     let (policy, policy_cap) = [0m[31mtransfer_policy::new(ctx)[0m;
+    [0m[34m│[0m                                [0m[31m^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+    [0m[34m│[0m                                [0m[31m│[0m                   [0m[34m│[0m
+    [0m[34m│[0m                                [0m[31m│[0m                   [0m[34mFound 1 argument(s) here[0m
+    [0m[34m│[0m                                [0m[31mInvalid call of 'sui::transfer_policy::new'. The call expected 2 argument(s) but got 1[0m
+    [0m[34m│[0m
+    [0m[34m┌─[0m /Users/harryphan/.move/https___github_com_MystenLabs_sui_git_framework__mainnet/crates/sui-framework/packages/sui-framework/sources/kiosk/transfer_policy.move:115:12
+    [0m[34m│[0m
+[0m[34m115[0m [0m[34m│[0m public fun new<T>(pub: &Publisher, ctx: &mut TxContext): (TransferPolicy<T>, TransferPolicyCap<T>) {
+    [0m[34m│[0m            [0m[34m---[0m [0m[34mExpected 2 argument(s)[0m
+
+[0m[1m[38;5;9merror[E03003][0m[1m: unbound module member[0m
+    [0m[34m┌─[0m ./sources/protocol.move:178:5
+    [0m[34m│[0m
+[0m[34m178[0m [0m[34m│[0m     [0m[31mtransfer_policy::set_royalty[0m(&policy, &policy_cap, state.hero_royalty_bps);
+    [0m[34m│[0m     [0m[31m^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m [0m[31mInvalid module access. Unbound function 'set_royalty' in module 'sui::transfer_policy'[0m
+
+[0m[1m[38;5;9merror[E03003][0m[1m: unbound module member[0m
+    [0m[34m┌─[0m ./sources/protocol.move:179:5
+    [0m[34m│[0m
+[0m[34m179[0m [0m[34m│[0m     [0m[31mtransfer_policy::freeze_policy[0m(policy_cap, policy);
+    [0m[34m│[0m     [0m[31m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m [0m[31mInvalid module access. Unbound function 'freeze_policy' in module 'sui::transfer_policy'[0m
+
+[0m[1m[38;5;9merror[E05001][0m[1m: ability constraint not satisfied[0m
+    [0m[34m┌─[0m ./sources/protocol.move:183:5
+    [0m[34m│[0m
+[0m[34m183[0m [0m[34m│[0m     [0m[31mkiosk::lock(kiosk, kiosk_cap, policy, issue_id)[0m;
+    [0m[34m│[0m     [0m[31m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m [0m[31m'key' constraint not satisifed[0m
+    [0m[34m│[0m
+    [0m[34m┌─[0m /Users/harryphan/.move/https___github_com_MystenLabs_sui_git_framework__mainnet/crates/sui-framework/packages/sui-framework/sources/object.move:61:15
+    [0m[34m│[0m
+[0m[34m 61[0m [0m[34m│[0m public struct ID has copy, drop, store {
+    [0m[34m│[0m               [0m[34m--[0m [0m[34mTo satisfy the constraint, the 'key' ability would need to be added here[0m
+    [0m[34m·[0m
+[0m[34m217[0m [0m[34m│[0m public fun id<T: key>(obj: &T): ID {
+    [0m[34m│[0m                                 [0m[34m--[0m [0m[34mThe type 'sui::object::ID' does not have the ability 'key'[0m
+    [0m[34m│[0m
+    [0m[34m┌─[0m /Users/harryphan/.move/https___github_com_MystenLabs_sui_git_framework__mainnet/crates/sui-framework/packages/sui-framework/sources/kiosk/kiosk.move:305:20
+    [0m[34m│[0m
+[0m[34m305[0m [0m[34m│[0m public fun lock<T: key + store>(
+    [0m[34m│[0m                    [0m[34m---[0m [0m[34m'key' constraint declared here[0m
+
+[0m[1m[38;5;9merror[E04007][0m[1m: incompatible types[0m
+    [0m[34m┌─[0m ./sources/protocol.move:183:5
+    [0m[34m│[0m
+[0m[34m183[0m [0m[34m│[0m     [0m[31mkiosk::lock(kiosk, kiosk_cap, policy, issue_id)[0m;
+    [0m[34m│[0m     [0m[31m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m [0m[31mInvalid call of 'sui::kiosk::lock'. Invalid argument for parameter '_policy'[0m
+    [0m[34m│[0m
+    [0m[34m┌─[0m /Users/harryphan/.move/https___github_com_MystenLabs_sui_git_framework__mainnet/crates/sui-framework/packages/sui-framework/sources/kiosk/transfer_policy.move:115:59
+    [0m[34m│[0m
+[0m[34m115[0m [0m[34m│[0m public fun new<T>(pub: &Publisher, ctx: &mut TxContext): (TransferPolicy<T>, TransferPolicyCap<T>) {
+    [0m[34m│[0m                                                           [0m[34m-----------------[0m [0m[34mGiven: 'sui::transfer_policy::TransferPolicy<_>'[0m
+    [0m[34m│[0m
+    [0m[34m┌─[0m /Users/harryphan/.move/https___github_com_MystenLabs_sui_git_framework__mainnet/crates/sui-framework/packages/sui-framework/sources/kiosk/kiosk.move:308:14
+    [0m[34m│[0m
+[0m[34m308[0m [0m[34m│[0m     _policy: &TransferPolicy<T>,
+    [0m[34m│[0m              [0m[34m------------------[0m [0m[34mExpected: '&sui::transfer_policy::TransferPolicy<_>'[0m
+
+[0m[1m[38;5;9merror[E04007][0m[1m: incompatible types[0m
+    [0m[34m┌─[0m ./sources/protocol.move:224:25
+    [0m[34m│[0m
+[0m[34m208[0m [0m[34m│[0m     payment: Coin<SUI>,
+    [0m[34m│[0m              [0m[34m---------[0m [0m[34mGiven: 'sui::coin::Coin<sui::sui::SUI>'[0m
+    [0m[34m·[0m
+[0m[34m224[0m [0m[34m│[0m     let platform_coin = [0m[31mcoin::take(&mut payment, platform_fee)[0m;
+    [0m[34m│[0m                         [0m[31m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m [0m[31mInvalid call of 'sui::coin::take'. Invalid argument for parameter 'balance'[0m
+    [0m[34m│[0m
+    [0m[34m┌─[0m /Users/harryphan/.move/https___github_com_MystenLabs_sui_git_framework__mainnet/crates/sui-framework/packages/sui-framework/sources/coin.move:153:34
+    [0m[34m│[0m
+[0m[34m153[0m [0m[34m│[0m public fun take<T>(balance: &mut Balance<T>, value: u64, ctx: &mut TxContext): Coin<T> {
+    [0m[34m│[0m                                  [0m[34m----------[0m [0m[34mExpected: 'sui::balance::Balance<_>'[0m
+
+[0m[1m[38;5;9merror[E04016][0m[1m: too few arguments[0m
+    [0m[34m┌─[0m ./sources/protocol.move:224:25
+    [0m[34m│[0m
+[0m[34m224[0m [0m[34m│[0m     let platform_coin = [0m[31mcoin::take(&mut payment, platform_fee)[0m;
+    [0m[34m│[0m                         [0m[31m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+    [0m[34m│[0m                         [0m[31m│[0m         [0m[34m│[0m
+    [0m[34m│[0m                         [0m[31m│[0m         [0m[34mFound 2 argument(s) here[0m
+    [0m[34m│[0m                         [0m[31mInvalid call of 'sui::coin::take'. The call expected 3 argument(s) but got 2[0m
+    [0m[34m│[0m
+    [0m[34m┌─[0m /Users/harryphan/.move/https___github_com_MystenLabs_sui_git_framework__mainnet/crates/sui-framework/packages/sui-framework/sources/coin.move:153:12
+    [0m[34m│[0m
+[0m[34m153[0m [0m[34m│[0m public fun take<T>(balance: &mut Balance<T>, value: u64, ctx: &mut TxContext): Coin<T> {
+    [0m[34m│[0m            [0m[34m----[0m [0m[34mExpected 3 argument(s)[0m
+
+[0m[1m[38;5;9merror[E04007][0m[1m: incompatible types[0m
+    [0m[34m┌─[0m ./sources/protocol.move:231:9
+    [0m[34m│[0m
+[0m[34m208[0m [0m[34m│[0m     payment: Coin<SUI>,
+    [0m[34m│[0m              [0m[34m---------[0m [0m[34mGiven: 'sui::coin::Coin<sui::sui::SUI>'[0m
+    [0m[34m·[0m
+[0m[34m231[0m [0m[34m│[0m         [0m[31mcoin::burn(payment)[0m;
+    [0m[34m│[0m         [0m[31m^^^^^^^^^^^^^^^^^^^[0m [0m[31mInvalid call of 'sui::coin::burn'. Invalid argument for parameter 'cap'[0m
+    [0m[34m│[0m
+    [0m[34m┌─[0m /Users/harryphan/.move/https___github_com_MystenLabs_sui_git_framework__mainnet/crates/sui-framework/packages/sui-framework/sources/coin.move:332:31
+    [0m[34m│[0m
+[0m[34m332[0m [0m[34m│[0m public entry fun burn<T>(cap: &mut TreasuryCap<T>, c: Coin<T>): u64 {
+    [0m[34m│[0m                               [0m[34m-------------------[0m [0m[34mExpected: '&mut sui::coin::TreasuryCap<_>'[0m
+
+[0m[1m[38;5;9merror[E04010][0m[1m: cannot infer type[0m
+    [0m[34m┌─[0m ./sources/protocol.move:231:9
+    [0m[34m│[0m
+[0m[34m231[0m [0m[34m│[0m         [0m[31mcoin::burn(payment)[0m;
+    [0m[34m│[0m         [0m[31m^^^^^^^^^^^^^^^^^^^[0m [0m[31mCould not infer this type. Try adding an annotation[0m
+
+[0m[1m[38;5;9merror[E04016][0m[1m: too few arguments[0m
+    [0m[34m┌─[0m ./sources/protocol.move:231:9
+    [0m[34m│[0m
+[0m[34m231[0m [0m[34m│[0m         [0m[31mcoin::burn(payment)[0m;
+    [0m[34m│[0m         [0m[31m^^^^^^^^^^^^^^^^^^^[0m
+    [0m[34m│[0m         [0m[31m│[0m         [0m[34m│[0m
+    [0m[34m│[0m         [0m[31m│[0m         [0m[34mFound 1 argument(s) here[0m
+    [0m[34m│[0m         [0m[31mInvalid call of 'sui::coin::burn'. The call expected 2 argument(s) but got 1[0m
+    [0m[34m│[0m
+    [0m[34m┌─[0m /Users/harryphan/.move/https___github_com_MystenLabs_sui_git_framework__mainnet/crates/sui-framework/packages/sui-framework/sources/coin.move:332:18
+    [0m[34m│[0m
+[0m[34m332[0m [0m[34m│[0m public entry fun burn<T>(cap: &mut TreasuryCap<T>, c: Coin<T>): u64 {
+    [0m[34m│[0m                  [0m[34m----[0m [0m[34mExpected 2 argument(s)[0m
+
+[0m[1m[38;5;9merror[E04007][0m[1m: incompatible types[0m
+    [0m[34m┌─[0m ./sources/protocol.move:256:32
+    [0m[34m│[0m
+[0m[34m209[0m [0m[34m│[0m     ctx: &mut TxContext
+    [0m[34m│[0m               [0m[34m---------[0m [0m[34mGiven: 'sui::tx_context::TxContext'[0m
+    [0m[34m·[0m
+[0m[34m256[0m [0m[34m│[0m     let (policy, policy_cap) = [0m[31mtransfer_policy::new(ctx)[0m;
+    [0m[34m│[0m                                [0m[31m^^^^^^^^^^^^^^^^^^^^^^^^^[0m [0m[31mInvalid call of 'sui::transfer_policy::new'. Invalid argument for parameter 'pub'[0m
+    [0m[34m│[0m
+    [0m[34m┌─[0m /Users/harryphan/.move/https___github_com_MystenLabs_sui_git_framework__mainnet/crates/sui-framework/packages/sui-framework/sources/kiosk/transfer_policy.move:115:25
+    [0m[34m│[0m
+[0m[34m115[0m [0m[34m│[0m public fun new<T>(pub: &Publisher, ctx: &mut TxContext): (TransferPolicy<T>, TransferPolicyCap<T>) {
+    [0m[34m│[0m                         [0m[34m---------[0m [0m[34mExpected: 'sui::package::Publisher'[0m
+
+[0m[1m[38;5;9merror[E04010][0m[1m: cannot infer type[0m
+    [0m[34m┌─[0m ./sources/protocol.move:256:32
+    [0m[34m│[0m
+[0m[34m256[0m [0m[34m│[0m     let (policy, policy_cap) = [0m[31mtransfer_policy::new(ctx)[0m;
+    [0m[34m│[0m                                [0m[31m^^^^^^^^^^^^^^^^^^^^^^^^^[0m [0m[31mCould not infer this type. Try adding an annotation[0m
+
+[0m[1m[38;5;9merror[E04016][0m[1m: too few arguments[0m
+    [0m[34m┌─[0m ./sources/protocol.move:256:32
+    [0m[34m│[0m
+[0m[34m256[0m [0m[34m│[0m     let (policy, policy_cap) = [0m[31mtransfer_policy::new(ctx)[0m;
+    [0m[34m│[0m                                [0m[31m^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+    [0m[34m│[0m                                [0m[31m│[0m                   [0m[34m│[0m
+    [0m[34m│[0m                                [0m[31m│[0m                   [0m[34mFound 1 argument(s) here[0m
+    [0m[34m│[0m                                [0m[31mInvalid call of 'sui::transfer_policy::new'. The call expected 2 argument(s) but got 1[0m
+    [0m[34m│[0m
+    [0m[34m┌─[0m /Users/harryphan/.move/https___github_com_MystenLabs_sui_git_framework__mainnet/crates/sui-framework/packages/sui-framework/sources/kiosk/transfer_policy.move:115:12
+    [0m[34m│[0m
+[0m[34m115[0m [0m[34m│[0m public fun new<T>(pub: &Publisher, ctx: &mut TxContext): (TransferPolicy<T>, TransferPolicyCap<T>) {
+    [0m[34m│[0m            [0m[34m---[0m [0m[34mExpected 2 argument(s)[0m
+
+[0m[1m[38;5;9merror[E03003][0m[1m: unbound module member[0m
+    [0m[34m┌─[0m ./sources/protocol.move:257:5
+    [0m[34m│[0m
+[0m[34m257[0m [0m[34m│[0m     [0m[31mtransfer_policy::set_royalty[0m(&policy, &policy_cap, state.hero_royalty_bps);
+    [0m[34m│[0m     [0m[31m^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m [0m[31mInvalid module access. Unbound function 'set_royalty' in module 'sui::transfer_policy'[0m
+
+[0m[1m[38;5;9merror[E03003][0m[1m: unbound module member[0m
+    [0m[34m┌─[0m ./sources/protocol.move:258:5
+    [0m[34m│[0m
+[0m[34m258[0m [0m[34m│[0m     [0m[31mtransfer_policy::freeze_policy[0m(policy_cap, policy);
+    [0m[34m│[0m     [0m[31m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m [0m[31mInvalid module access. Unbound function 'freeze_policy' in module 'sui::transfer_policy'[0m
+
+[0m[1m[38;5;9merror[E05001][0m[1m: ability constraint not satisfied[0m
+    [0m[34m┌─[0m ./sources/protocol.move:262:5
+    [0m[34m│[0m
+[0m[34m262[0m [0m[34m│[0m     [0m[31mkiosk::lock(kiosk, kiosk_cap, policy, issue_id)[0m;
+    [0m[34m│[0m     [0m[31m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m [0m[31m'key' constraint not satisifed[0m
+    [0m[34m│[0m
+    [0m[34m┌─[0m /Users/harryphan/.move/https___github_com_MystenLabs_sui_git_framework__mainnet/crates/sui-framework/packages/sui-framework/sources/object.move:61:15
+    [0m[34m│[0m
+[0m[34m 61[0m [0m[34m│[0m public struct ID has copy, drop, store {
+    [0m[34m│[0m               [0m[34m--[0m [0m[34mTo satisfy the constraint, the 'key' ability would need to be added here[0m
+    [0m[34m·[0m
+[0m[34m217[0m [0m[34m│[0m public fun id<T: key>(obj: &T): ID {
+    [0m[34m│[0m                                 [0m[34m--[0m [0m[34mThe type 'sui::object::ID' does not have the ability 'key'[0m
+    [0m[34m│[0m
+    [0m[34m┌─[0m /Users/harryphan/.move/https___github_com_MystenLabs_sui_git_framework__mainnet/crates/sui-framework/packages/sui-framework/sources/kiosk/kiosk.move:305:20
+    [0m[34m│[0m
+[0m[34m305[0m [0m[34m│[0m public fun lock<T: key + store>(
+    [0m[34m│[0m                    [0m[34m---[0m [0m[34m'key' constraint declared here[0m
+
+[0m[1m[38;5;9merror[E04007][0m[1m: incompatible types[0m
+    [0m[34m┌─[0m ./sources/protocol.move:262:5
+    [0m[34m│[0m
+[0m[34m262[0m [0m[34m│[0m     [0m[31mkiosk::lock(kiosk, kiosk_cap, policy, issue_id)[0m;
+    [0m[34m│[0m     [0m[31m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m [0m[31mInvalid call of 'sui::kiosk::lock'. Invalid argument for parameter '_policy'[0m
+    [0m[34m│[0m
+    [0m[34m┌─[0m /Users/harryphan/.move/https___github_com_MystenLabs_sui_git_framework__mainnet/crates/sui-framework/packages/sui-framework/sources/kiosk/transfer_policy.move:115:59
+    [0m[34m│[0m
+[0m[34m115[0m [0m[34m│[0m public fun new<T>(pub: &Publisher, ctx: &mut TxContext): (TransferPolicy<T>, TransferPolicyCap<T>) {
+    [0m[34m│[0m                                                           [0m[34m-----------------[0m [0m[34mGiven: 'sui::transfer_policy::TransferPolicy<_>'[0m
+    [0m[34m│[0m
+    [0m[34m┌─[0m /Users/harryphan/.move/https___github_com_MystenLabs_sui_git_framework__mainnet/crates/sui-framework/packages/sui-framework/sources/kiosk/kiosk.move:308:14
+    [0m[34m│[0m
+[0m[34m308[0m [0m[34m│[0m     _policy: &TransferPolicy<T>,
+    [0m[34m│[0m              [0m[34m------------------[0m [0m[34mExpected: '&sui::transfer_policy::TransferPolicy<_>'[0m
+
+[0m[1m[38;5;11mwarning[W02021][0m[1m: duplicate alias[0m
+  [0m[34m┌─[0m ./sources/comic_series.move:3:19
+  [0m[34m│[0m
+[0m[34m3[0m [0m[34m│[0m use sui::object::{[0m[33mSelf[0m, UID, ID};
+  [0m[34m│[0m                   [0m[33m^^^^[0m [0m[33mUnnecessary alias 'object' for module 'sui::object'. This alias is provided by default[0m
+  [0m[34m│[0m
+  [0m[34m=[0m This warning can be suppressed with '#[allow(duplicate_alias)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+[0m[1m[38;5;11mwarning[W02021][0m[1m: duplicate alias[0m
+  [0m[34m┌─[0m ./sources/comic_series.move:3:25
+  [0m[34m│[0m
+[0m[34m3[0m [0m[34m│[0m use sui::object::{Self, [0m[33mUID[0m, ID};
+  [0m[34m│[0m                         [0m[33m^^^[0m [0m[33mUnnecessary alias 'UID' for module member 'sui::object::UID'. This alias is provided by default[0m
+  [0m[34m│[0m
+  [0m[34m=[0m This warning can be suppressed with '#[allow(duplicate_alias)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+[0m[1m[38;5;11mwarning[W02021][0m[1m: duplicate alias[0m
+  [0m[34m┌─[0m ./sources/comic_series.move:3:30
+  [0m[34m│[0m
+[0m[34m3[0m [0m[34m│[0m use sui::object::{Self, UID, [0m[33mID[0m};
+  [0m[34m│[0m                              [0m[33m^^[0m [0m[33mUnnecessary alias 'ID' for module member 'sui::object::ID'. This alias is provided by default[0m
+  [0m[34m│[0m
+  [0m[34m=[0m This warning can be suppressed with '#[allow(duplicate_alias)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+[0m[1m[38;5;11mwarning[W02021][0m[1m: duplicate alias[0m
+  [0m[34m┌─[0m ./sources/comic_series.move:6:23
+  [0m[34m│[0m
+[0m[34m6[0m [0m[34m│[0m use sui::tx_context::{[0m[33mSelf[0m, TxContext};
+  [0m[34m│[0m                       [0m[33m^^^^[0m [0m[33mUnnecessary alias 'tx_context' for module 'sui::tx_context'. This alias is provided by default[0m
+  [0m[34m│[0m
+  [0m[34m=[0m This warning can be suppressed with '#[allow(duplicate_alias)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+[0m[1m[38;5;11mwarning[W02021][0m[1m: duplicate alias[0m
+  [0m[34m┌─[0m ./sources/comic_series.move:6:29
+  [0m[34m│[0m
+[0m[34m6[0m [0m[34m│[0m use sui::tx_context::{Self, [0m[33mTxContext[0m};
+  [0m[34m│[0m                             [0m[33m^^^^^^^^^[0m [0m[33mUnnecessary alias 'TxContext' for module member 'sui::tx_context::TxContext'. This alias is provided by default[0m
+  [0m[34m│[0m
+  [0m[34m=[0m This warning can be suppressed with '#[allow(duplicate_alias)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+[0m[1m[38;5;11mwarning[W09011][0m[1m: unused constant[0m
+   [0m[34m┌─[0m ./sources/comic_series.move:11:7
+   [0m[34m│[0m
+[0m[34m11[0m [0m[34m│[0m const [0m[33mESeriesNotFound[0m: u64 = 0;
+   [0m[34m│[0m       [0m[33m^^^^^^^^^^^^^^^[0m [0m[33mThe constant 'ESeriesNotFound' is never used. Consider removing it.[0m
+   [0m[34m│[0m
+   [0m[34m=[0m This warning can be suppressed with '#[allow(unused_const)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+Failed to build Move modules: Compilation error.
