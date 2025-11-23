@@ -1273,9 +1273,29 @@ OUTPUT STRICT JSON ONLY:
       const maxPage = Math.max(...historyRef.current.map((face) => face.pageIndex || 0));
       if (maxPage < TOTAL_PAGES) {
         generateBatch(5, BATCH_SIZE);
+        // Auto-flip to next page to show loading state
+        setTimeout(() => setCurrentSheetIndex((prev) => prev + 1), 500);
       }
+    } else {
+      // Generate Back Cover immediately so user can Mint
+      const maxPage = Math.max(...historyRef.current.map((face) => face.pageIndex || 0));
+      const backCoverPageNum = maxPage + 1;
+
+      const backCoverFace: ComicFace = {
+        id: `page-${backCoverPageNum}`,
+        type: "back_cover",
+        choices: [],
+        isLoading: true,
+        pageIndex: backCoverPageNum
+      };
+
+      setComicFaces((prev) => [...prev, backCoverFace]);
+      historyRef.current.push(backCoverFace);
+
+      await generateSinglePage(backCoverFace.id, backCoverPageNum, "back_cover");
+      // Auto-flip to back cover
+      setTimeout(() => setCurrentSheetIndex((prev) => prev + 1), 500);
     }
-    // If false, stop generating - user can still read pages 1-4
   };
 
   const resetApp = () => {
@@ -1381,34 +1401,58 @@ OUTPUT STRICT JSON ONLY:
         return;
       }
 
+      // OPTIMIZATION: Compress all images before upload
+      console.log("Compressing comic pages...");
+      const compressedPages = await Promise.all(validPages.map(async (page) => {
+        let compressedUrl = page.imageUrl;
+        if (page.imageUrl && page.imageUrl.startsWith("data:image")) {
+          const base64 = page.imageUrl.split(",")[1];
+          const compressedBase64 = await compressImage(base64);
+          compressedUrl = `data:image/jpeg;base64,${compressedBase64}`;
+        }
+        return {
+          pageIndex: page.pageIndex,
+          imageUrl: compressedUrl,
+          narrative: page.narrative
+        };
+      }));
+
       const comicData = {
         title: "Infinite Heroes Issue #1",
         genre: selectedGenre,
         heroId: heroId || "0x0",
-        pages: validPages.map(page => ({
-          pageIndex: page.pageIndex,
-          imageUrl: page.imageUrl,
-          narrative: page.narrative
-        })),
+        pages: compressedPages,
         timestamp: Date.now()
       };
 
-      // 2. Upload to Walrus
+      // 2. Upload Comic Data to Walrus
       console.log("Uploading comic data to Walrus...");
       const jsonString = JSON.stringify(comicData);
       const blob = new TextEncoder().encode(jsonString); // Convert string to Uint8Array
-      const { blobId, blobUrl } = await uploadToWalrus(blob);
-      console.log("Comic Data Uploaded:", blobId, blobUrl);
+      const { blobId } = await uploadToWalrus(blob);
+      console.log("Comic Data Uploaded:", blobId);
 
-      // 3. Mint Comic
+      // 3. Upload Cover Image to Walrus (Fix for Size Limit)
+      console.log("Processing cover image...");
       const coverFace = comicFaces.find(f => f.type === "cover");
-      const coverUrl = coverFace?.imageUrl || "https://example.com/cover.jpg";
+      let finalCoverUrl = "https://example.com/cover.jpg";
 
+      if (coverFace?.imageUrl) {
+        console.log("Compressing and uploading cover...");
+        const base64 = coverFace.imageUrl.split(",")[1];
+        const compressedCoverBase64 = await compressImage(base64);
+        const coverBlob = base64ToBlob(compressedCoverBase64);
+        const { blobUrl } = await uploadToWalrus(coverBlob);
+        finalCoverUrl = blobUrl;
+        console.log("Cover uploaded:", finalCoverUrl);
+      }
+
+      // 4. Mint Comic
       const response = await mintComic(
         heroId || "0x0", // Pass hero ID if we have it
         "Infinite Heroes Issue #1",
         selectedGenre,
-        coverUrl,
+        finalCoverUrl, // Use Walrus URL instead of base64
         blobId // Real Blob ID
       );
       console.log("Comic Minted:", response);
