@@ -2,9 +2,7 @@ import { Ed25519Keypair } from "@mysten/sui/keypairs/ed25519";
 import { SuiClient, getFullnodeUrl } from "@mysten/sui/client";
 import { Transaction } from "@mysten/sui/transactions";
 import { decodeSuiPrivateKey } from "@mysten/sui/cryptography";
-
-// Test private key - ONLY FOR LOCAL TESTING
-const TEST_PRIVATE_KEY = "suiprivkey1qqxrynrsy2a2txs6usnkg5zql0atlkslx9azqwvpelc6q2c2uhuev6clpe4";
+import { getTestPrivateKey } from "../config";
 
 // Enable test mode via environment variable or localStorage
 const isTestMode = () => {
@@ -23,9 +21,15 @@ export const getTestWallet = () => {
   }
 
   if (!testKeypair) {
+    const privateKey = getTestPrivateKey();
+    if (!privateKey) {
+      console.warn("REACT_APP_TEST_PRIVATE_KEY not set. Test wallet unavailable.");
+      return null;
+    }
+
     try {
       // Decode the Sui private key format (suiprivkey1...)
-      const decoded = decodeSuiPrivateKey(TEST_PRIVATE_KEY);
+      const decoded = decodeSuiPrivateKey(privateKey);
       testKeypair = Ed25519Keypair.fromSecretKey(decoded.secretKey);
     } catch (error) {
       console.error("Failed to create test keypair:", error);
@@ -38,8 +42,14 @@ export const getTestWallet = () => {
 
 export const getForceTestWallet = () => {
   if (!testKeypair) {
+    const privateKey = getTestPrivateKey();
+    if (!privateKey) {
+      console.warn("REACT_APP_TEST_PRIVATE_KEY not set. Test wallet unavailable.");
+      return null;
+    }
+
     try {
-      const decoded = decodeSuiPrivateKey(TEST_PRIVATE_KEY);
+      const decoded = decodeSuiPrivateKey(privateKey);
       testKeypair = Ed25519Keypair.fromSecretKey(decoded.secretKey);
     } catch (error) {
       console.error("Failed to create test keypair:", error);

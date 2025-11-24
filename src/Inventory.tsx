@@ -86,7 +86,7 @@ export const Inventory: React.FC<InventoryProps> = ({ onBack }) => {
         <div className="max-w-7xl mx-auto">
           <div className="mb-8">
             <p className="text-xl md:text-2xl text-center bg-white border-4 border-brand-dark shadow-hard px-6 py-3 inline-block">
-              Your Collection of Generated Comics
+              Collection of Generated Comics
             </p>
           </div>
 

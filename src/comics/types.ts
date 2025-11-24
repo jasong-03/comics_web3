@@ -54,6 +54,8 @@ export const STORIES = [
   { file: "sui-story.md", name: "Sui Origin Story" },
   { file: "walrus-story.md", name: "Walrus Story" },
   { file: "tutorial.md", name: "Tutorial" },
+  { file: "suiet.md", name: "SuiET Story" },
+  { file: "deepbook.md", name: "DeepBook Story" },
 ];
 
 export interface ComicFace {
